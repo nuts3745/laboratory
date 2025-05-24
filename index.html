@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,13 +14,13 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1e93c6;
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: #f8f7f2;
             backdrop-filter: blur(15px);
             border-radius: 24px;
             padding: 30px;
@@ -31,11 +32,11 @@
 
         h1 {
             text-align: center;
-            color: #2d3748;
+            color: #1e93c6;
             margin-bottom: 30px;
             font-size: clamp(1.5rem, 4vw, 2.8rem);
             font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #1e93c6;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -66,8 +67,8 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(145deg, #4299e1, #3182ce);
-            color: white;
+            background: #1e93c6;
+            color: #f8f7f2;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -81,51 +82,66 @@
 
         .node:hover {
             transform: scale(1.15);
-            box-shadow: 0 10px 30px rgba(66, 153, 225, 0.6);
+            box-shadow: 0 10px 30px #1e93c6;
         }
 
         .node.active {
-            background: linear-gradient(145deg, #ed8936, #dd6b20);
+            background: #ed8936;
             transform: scale(1.3);
             box-shadow: 0 12px 35px rgba(237, 137, 54, 0.7);
         }
 
         .node.parent {
-            background: linear-gradient(145deg, #38a169, #2f855a);
+            background: #38a169;
             transform: scale(1.2);
             box-shadow: 0 8px 25px rgba(56, 161, 105, 0.6);
         }
 
         .node.child {
-            background: linear-gradient(145deg, #9f7aea, #805ad5);
+            background: #9f7aea;
             transform: scale(1.2);
             box-shadow: 0 8px 25px rgba(159, 122, 234, 0.6);
         }
 
         .node.comparing {
-            background: linear-gradient(145deg, #f56565, #e53e3e);
+            background: #f56565;
             animation: pulse 0.8s infinite;
         }
 
         .node.swapping {
-            background: linear-gradient(145deg, #ffd89b, #19547b);
+            background: #e7a233;
             animation: bounce 0.6s ease-in-out;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1.1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1.1); }
+            0% {
+                transform: scale(1.1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1.1);
+            }
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0) scale(1.15); }
-            50% { transform: translateY(-10px) scale(1.25); }
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1.15);
+            }
+
+            50% {
+                transform: translateY(-10px) scale(1.25);
+            }
         }
 
         .edge {
             position: absolute;
-            background: linear-gradient(90deg, #a0aec0, #718096);
+            background: #1e93c6;
             border-radius: 3px;
             transform-origin: left center;
             z-index: 1;
@@ -134,7 +150,7 @@
         }
 
         .edge.highlighted {
-            background: linear-gradient(90deg, #ed8936, #dd6b20);
+            background: #ed8936;
             opacity: 1;
             box-shadow: 0 3px 10px rgba(237, 137, 54, 0.5);
             height: 4px !important;
@@ -146,7 +162,7 @@
         }
 
         .array-title {
-            color: #2d3748;
+            color: #1e93c6;
             margin-bottom: 20px;
             font-size: 1.4rem;
             font-weight: 700;
@@ -164,15 +180,15 @@
         .array-cell {
             width: 50px;
             height: 50px;
-            border: 2px solid #e2e8f0;
+            border: 1px solid #f8f7f2;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             font-size: 16px;
-            background: linear-gradient(145deg, #f7fafc, #edf2f7);
-            color: #4a5568;
+            background: #1e93c6;
+            color: #f8f7f2;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
@@ -181,40 +197,40 @@
         .array-cell:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(66, 153, 225, 0.3);
-            border-color: #4299e1;
+            border-color: #1e93c6;
         }
 
         .array-cell.active {
-            background: linear-gradient(145deg, #ed8936, #dd6b20);
-            color: white;
+            background: #ed8936;
+            color: #f8f7f2;
             border-color: #ed8936;
             transform: translateY(-3px) scale(1.1);
             box-shadow: 0 8px 25px rgba(237, 137, 54, 0.5);
         }
 
         .array-cell.parent {
-            background: linear-gradient(145deg, #38a169, #2f855a);
-            color: white;
+            background: #38a169;
+            color: #f8f7f2;
             border-color: #38a169;
             transform: translateY(-2px) scale(1.05);
         }
 
         .array-cell.child {
-            background: linear-gradient(145deg, #9f7aea, #805ad5);
-            color: white;
+            background: #9f7aea;
+            color: #f8f7f2;
             border-color: #9f7aea;
             transform: translateY(-2px) scale(1.05);
         }
 
         .array-cell.comparing {
-            background: linear-gradient(145deg, #f56565, #e53e3e);
-            color: white;
+            background: #f56565;
+            color: #f8f7f2;
             animation: pulse 0.8s infinite;
         }
 
         .array-cell.swapping {
-            background: linear-gradient(145deg, #ffd89b, #19547b);
-            color: white;
+            background: #e7a233;
+            color: #f8f7f2;
             animation: bounce 0.6s ease-in-out;
         }
 
@@ -233,14 +249,14 @@
 
         .control-title {
             font-weight: 700;
-            color: #2d3748;
+            color: #1e93c6;
             font-size: 1.1rem;
             text-align: center;
         }
 
         .btn {
-            background: linear-gradient(145deg, #4299e1, #3182ce);
-            color: white;
+            background: #1e93c6;
+            color: #f8f7f2;
             border: none;
             padding: 14px 20px;
             border-radius: 12px;
@@ -257,7 +273,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+            box-shadow: 0 8px 25px #1e93c6;
         }
 
         .btn:active {
@@ -265,15 +281,16 @@
         }
 
         .btn.primary {
-            background: linear-gradient(145deg, #38a169, #2f855a);
+            background: #1e93c6;
         }
 
         .btn.danger {
-            background: linear-gradient(145deg, #f56565, #e53e3e);
+            background: #f56565;
         }
 
         .btn.secondary {
-            background: linear-gradient(145deg, #9f7aea, #805ad5);
+            color: #1e93c6;
+            background: #f8f7f2
         }
 
         .btn:disabled {
@@ -291,7 +308,7 @@
         .input-field {
             flex: 1;
             padding: 10px 12px;
-            border: 2px solid #e2e8f0;
+            border: #f8f7f2;
             border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s ease;
@@ -299,35 +316,35 @@
 
         .input-field:focus {
             outline: none;
-            border-color: #4299e1;
+            border-color: #1e93c6;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
         }
 
         .info-panel {
-            background: rgba(247, 250, 252, 0.9);
+            background: #f8f7f2;
             border-radius: 16px;
             padding: 25px;
             margin-top: 25px;
-            border-left: 5px solid #4299e1;
+            border-left: 5px solid #1e93c6;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .info-title {
             font-weight: 700;
-            color: #2d3748;
+            color: #1e93c6;
             margin-bottom: 12px;
             font-size: 1.2rem;
         }
 
         .info-text {
-            color: #4a5568;
+            color: #333;
             line-height: 1.7;
             font-size: 15px;
         }
 
         .step-indicator {
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            color: white;
+            background: #1e93c6;
+            color: #f8f7f2;
             padding: 15px 20px;
             border-radius: 12px;
             margin-bottom: 20px;
@@ -347,8 +364,9 @@
 
         .heap-type-btn {
             padding: 8px 16px;
-            border: 2px solid #e2e8f0;
-            background: white;
+            border: 2px solid #f8f7f2;
+            background: #f8f7f2;
+            color: #1e93c6;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -356,9 +374,9 @@
         }
 
         .heap-type-btn.active {
-            background: linear-gradient(145deg, #4299e1, #3182ce);
-            color: white;
-            border-color: #4299e1;
+            background: #1e93c6;
+            color: #f8f7f2;
+            border-color: #1e93c6;
         }
 
         @media (max-width: 768px) {
@@ -409,10 +427,11 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>🌳 バイナリヒープ可視化ツール</h1>
-        
+
         <div class="heap-type-selector">
             <div class="heap-type-btn active" onclick="setHeapType('max')">📈 最大ヒープ</div>
             <div class="heap-type-btn" onclick="setHeapType('min')">📉 最小ヒープ</div>
@@ -513,11 +532,11 @@
 
         function setHeapType(type) {
             if (isAnimating) return;
-            
+
             heapType = type;
             document.querySelectorAll('.heap-type-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
+
             // ヒープを再構築
             buildHeap();
             renderHeap();
@@ -533,10 +552,10 @@
             const maxLevel = Math.min(4, Math.floor(Math.log2(heapData.length)));
             const positionInLevel = index - (Math.pow(2, level) - 1);
             const nodesInLevel = Math.pow(2, level);
-            
+
             const x = (treeWidth / (nodesInLevel + 1)) * (positionInLevel + 1) - 22.5;
             const y = (treeHeight / (maxLevel + 1)) * (level + 1) - 22.5;
-            
+
             return { x, y };
         }
 
@@ -545,7 +564,7 @@
             const dy = childPos.y - parentPos.y;
             const length = Math.sqrt(dx * dx + dy * dy);
             const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-            
+
             const edge = document.createElement('div');
             edge.className = 'edge';
             edge.style.width = length + 'px';
@@ -553,14 +572,14 @@
             edge.style.left = (parentPos.x + 22.5) + 'px';
             edge.style.top = (parentPos.y + 22.5) + 'px';
             edge.style.transform = `rotate(${angle}deg)`;
-            
+
             return edge;
         }
 
         function renderHeap() {
             const container = document.getElementById('heapTree');
             container.innerHTML = '';
-            
+
             if (heapData.length === 0) {
                 // 空のヒープの場合のメッセージ
                 const emptyMessage = document.createElement('div');
@@ -570,7 +589,7 @@
                     left: 50%;
                     transform: translate(-50%, -50%);
                     text-align: center;
-                    color: #718096;
+                    color: #1e93c6;
                     font-size: 18px;
                     font-weight: 600;
                 `;
@@ -582,17 +601,17 @@
                 renderArray();
                 return;
             }
-            
+
             const treeWidth = container.offsetWidth;
             const treeHeight = container.offsetHeight;
-            
+
             const positions = [];
-            
+
             // ノードの位置を計算して保存
             for (let i = 0; i < heapData.length; i++) {
                 positions[i] = calculatePosition(i, treeWidth, treeHeight);
             }
-            
+
             // エッジを先に描画
             for (let i = 1; i < heapData.length; i++) {
                 const parentIndex = Math.floor((i - 1) / 2);
@@ -600,7 +619,7 @@
                 edge.id = `edge-${parentIndex}-${i}`;
                 container.appendChild(edge);
             }
-            
+
             // ノードを描画
             for (let i = 0; i < heapData.length; i++) {
                 const node = document.createElement('div');
@@ -609,25 +628,25 @@
                 node.id = `node-${i}`;
                 node.style.left = positions[i].x + 'px';
                 node.style.top = positions[i].y + 'px';
-                
+
                 node.addEventListener('click', () => {
                     if (!isAnimating) highlightNode(i);
                 });
                 container.appendChild(node);
             }
-            
+
             renderArray();
         }
 
         function renderArray() {
             const arrayDisplay = document.getElementById('arrayDisplay');
             arrayDisplay.innerHTML = '';
-            
+
             if (heapData.length === 0) {
                 // 空の配列の場合のメッセージ
                 const emptyMessage = document.createElement('div');
                 emptyMessage.style.cssText = `
-                    color: #718096;
+                    color: #1e93c6;
                     font-size: 16px;
                     font-weight: 600;
                     padding: 20px;
@@ -636,7 +655,7 @@
                 arrayDisplay.appendChild(emptyMessage);
                 return;
             }
-            
+
             for (let i = 0; i < heapData.length; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'array-cell';
@@ -652,41 +671,41 @@
         function highlightNode(index) {
             clearAllHighlights();
             currentlyActive = index;
-            
+
             // ツリーノードをハイライト
             const treeNode = document.getElementById(`node-${index}`);
             if (treeNode) treeNode.classList.add('active');
-            
+
             // 配列セルをハイライト
             const arrayCell = document.getElementById(`array-cell-${index}`);
             if (arrayCell) arrayCell.classList.add('active');
-            
+
             // 親子関係もハイライト
             const parentIndex = index > 0 ? Math.floor((index - 1) / 2) : null;
             const leftChild = 2 * index + 1;
             const rightChild = 2 * index + 2;
-            
+
             if (parentIndex !== null) {
                 const parentNode = document.getElementById(`node-${parentIndex}`);
                 const parentCell = document.getElementById(`array-cell-${parentIndex}`);
                 if (parentNode) parentNode.classList.add('parent');
                 if (parentCell) parentCell.classList.add('parent');
             }
-            
+
             if (leftChild < heapData.length) {
                 const leftNode = document.getElementById(`node-${leftChild}`);
                 const leftCell = document.getElementById(`array-cell-${leftChild}`);
                 if (leftNode) leftNode.classList.add('child');
                 if (leftCell) leftCell.classList.add('child');
             }
-            
+
             if (rightChild < heapData.length) {
                 const rightNode = document.getElementById(`node-${rightChild}`);
                 const rightCell = document.getElementById(`array-cell-${rightChild}`);
                 if (rightNode) rightNode.classList.add('child');
                 if (rightCell) rightCell.classList.add('child');
             }
-            
+
             updateDetailedInfo(index);
             highlightRelatedEdges(index);
         }
@@ -695,11 +714,11 @@
             document.querySelectorAll('.node').forEach(node => {
                 node.classList.remove('active', 'parent', 'child', 'comparing', 'swapping');
             });
-            
+
             document.querySelectorAll('.array-cell').forEach(cell => {
                 cell.classList.remove('active', 'parent', 'child', 'comparing', 'swapping');
             });
-            
+
             document.querySelectorAll('.edge').forEach(edge => {
                 edge.classList.remove('highlighted');
             });
@@ -709,21 +728,21 @@
             document.querySelectorAll('.edge').forEach(edge => {
                 edge.classList.remove('highlighted');
             });
-            
+
             if (index > 0) {
                 const parentIndex = Math.floor((index - 1) / 2);
                 const edge = document.getElementById(`edge-${parentIndex}-${index}`);
                 if (edge) edge.classList.add('highlighted');
             }
-            
+
             const leftChild = 2 * index + 1;
             const rightChild = 2 * index + 2;
-            
+
             if (leftChild < heapData.length) {
                 const leftEdge = document.getElementById(`edge-${index}-${leftChild}`);
                 if (leftEdge) leftEdge.classList.add('highlighted');
             }
-            
+
             if (rightChild < heapData.length) {
                 const rightEdge = document.getElementById(`edge-${index}-${rightChild}`);
                 if (rightEdge) rightEdge.classList.add('highlighted');
@@ -734,17 +753,17 @@
             const parentIndex = index > 0 ? Math.floor((index - 1) / 2) : null;
             const leftChild = 2 * index + 1;
             const rightChild = 2 * index + 2;
-            
+
             document.getElementById('infoTitle').textContent = `🎯 ノード ${heapData[index]} の詳細`;
-            
+
             let infoText = `🎯 <strong>選択中:</strong> ノード ${heapData[index]} (配列インデックス: ${index})<br><br>`;
-            
+
             if (parentIndex !== null) {
                 infoText += `👆 <strong>親:</strong> ${heapData[parentIndex]} (インデックス: ${parentIndex})<br>`;
             } else {
                 infoText += `👑 <strong>ルートノード</strong> (親はありません)<br>`;
             }
-            
+
             if (leftChild < heapData.length || rightChild < heapData.length) {
                 infoText += `👇 <strong>子:</strong> `;
                 if (leftChild < heapData.length) {
@@ -757,12 +776,12 @@
             } else {
                 infoText += `🍃 <strong>葉ノード</strong> (子はありません)<br>`;
             }
-            
+
             infoText += `<br>💡 <strong>配列での位置関係:</strong><br>`;
             infoText += `• 親のインデックス: floor((${index}-1)/2) = ${parentIndex !== null ? parentIndex : 'なし'}<br>`;
             infoText += `• 左の子: 2×${index}+1 = ${leftChild}${leftChild >= heapData.length ? ' (範囲外)' : ''}<br>`;
             infoText += `• 右の子: 2×${index}+2 = ${rightChild}${rightChild >= heapData.length ? ' (範囲外)' : ''}`;
-            
+
             document.getElementById('infoText').innerHTML = infoText;
         }
 
@@ -772,7 +791,7 @@
                 document.getElementById('infoText').innerHTML = text;
             } else {
                 if (heapData.length === 0) {
-                    document.getElementById('infoText').innerHTML = 
+                    document.getElementById('infoText').innerHTML =
                         `🚀 <strong>ヒープ学習ツールへようこそ！</strong><br><br>
                         まずは「サンプルヒープを作成」ボタンをクリックして、完成されたヒープの構造を確認してみましょう。<br><br>
                         または「空のヒープから開始」で、一から要素を追加してヒープを構築する過程を学習できます。<br><br>
@@ -781,7 +800,7 @@
                         • 親ノードが子ノードより${heapType === 'max' ? '大きい' : '小さい'}（${heapType === 'max' ? '最大' : '最小'}ヒープ）<br>
                         • 配列で効率的に表現可能`;
                 } else {
-                    document.getElementById('infoText').innerHTML = 
+                    document.getElementById('infoText').innerHTML =
                         `バイナリヒープは完全二分木構造で、親ノードが子ノードより${heapType === 'max' ? '大きい' : '小さい'}（${heapType === 'max' ? '最大' : '最小'}ヒープ）性質を持ちます。<br><br>
                         🖱️ <strong>ツリーのノードまたは配列の要素をクリック</strong>して詳細を確認できます！<br>
                         ⚡ <strong>Add/Pop/Heapify操作</strong>でアルゴリズムの動作を可視化できます！`;
@@ -806,22 +825,22 @@
                     resolve();
                     return;
                 }
-                
+
                 const parentIndex = Math.floor((index - 1) / 2);
-                
+
                 // 比較をハイライト
                 highlightComparison([index, parentIndex]);
-                
+
                 setTimeout(() => {
                     if (compare(heapData[index], heapData[parentIndex])) {
                         // スワップをハイライト
                         highlightSwap([index, parentIndex]);
-                        
+
                         setTimeout(() => {
                             // 実際にスワップ
                             [heapData[index], heapData[parentIndex]] = [heapData[parentIndex], heapData[index]];
                             renderHeap();
-                            
+
                             setTimeout(() => {
                                 heapifyUp(parentIndex).then(resolve);
                             }, 300);
@@ -839,32 +858,32 @@
                 const leftChild = 2 * index + 1;
                 const rightChild = 2 * index + 2;
                 let targetIndex = index;
-                
+
                 const candidates = [index];
                 if (leftChild < heapData.length) candidates.push(leftChild);
                 if (rightChild < heapData.length) candidates.push(rightChild);
-                
+
                 // 比較対象をハイライト
                 highlightComparison(candidates);
-                
+
                 setTimeout(() => {
                     if (leftChild < heapData.length && compare(heapData[leftChild], heapData[targetIndex])) {
                         targetIndex = leftChild;
                     }
-                    
+
                     if (rightChild < heapData.length && compare(heapData[rightChild], heapData[targetIndex])) {
                         targetIndex = rightChild;
                     }
-                    
+
                     if (targetIndex !== index) {
                         // スワップをハイライト
                         highlightSwap([index, targetIndex]);
-                        
+
                         setTimeout(() => {
                             // 実際にスワップ
                             [heapData[index], heapData[targetIndex]] = [heapData[targetIndex], heapData[index]];
                             renderHeap();
-                            
+
                             setTimeout(() => {
                                 heapifyDown(targetIndex).then(resolve);
                             }, 300);
@@ -900,46 +919,46 @@
         // 新しい関数を追加
         async function createSampleHeap() {
             if (isAnimating) return;
-            
+
             isAnimating = true;
-            
+
             showStep('🚀 サンプルヒープを作成しています...');
             updateInfo('📋 サンプルヒープの作成', 'きれいに整理された最大ヒープのサンプルを作成します。');
-            
+
             // きれいなヒープ構造のサンプルデータ
             const sampleData = [90, 80, 70, 60, 75, 65, 50, 40, 30, 55, 45, 35, 25];
             heapData = [...sampleData];
-            
+
             renderHeap();
-            
+
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             showStep('✅ サンプルヒープが完成しました！');
-            updateInfo('🎯 サンプルヒープの説明', 
+            updateInfo('🎯 サンプルヒープの説明',
                 `このヒープは<strong>最大ヒープ</strong>の完璧な例です：<br><br>
                 🔝 <strong>ルート（90）が最大値</strong><br>
                 👆 <strong>各親ノードが子ノードより大きい</strong><br>
                 🌳 <strong>完全二分木の構造</strong><br>
                 📊 <strong>配列で効率的に表現</strong><br><br>
                 ノードをクリックして親子関係を確認してみてください！`);
-            
+
             await new Promise(resolve => setTimeout(resolve, 2000));
-            
+
             hideStep();
             isAnimating = false;
         }
 
         async function showEmptyDemo() {
             if (isAnimating) return;
-            
+
             isAnimating = true;
-            
+
             showStep('📖 空のヒープから学習を開始');
-            
+
             heapData = [];
             renderHeap();
-            
-            updateInfo('🎓 ヒープ学習ガイド', 
+
+            updateInfo('🎓 ヒープ学習ガイド',
                 `空のヒープから始めましょう！<br><br>
                 <strong>学習ステップ：</strong><br>
                 1️⃣ 「➕ Add」で要素を一つずつ追加<br>
@@ -947,49 +966,49 @@
                 3️⃣ 「🗑️ Pop」でルート要素を削除<br>
                 4️⃣ 「🔀 Heapify」で配列からヒープを構築<br><br>
                 💡 <strong>まずは数値を入力してAddボタンを押してみてください！</strong>`);
-            
+
             await new Promise(resolve => setTimeout(resolve, 2000));
-            
+
             hideStep();
             isAnimating = false;
         }
         async function addElement() {
             if (isAnimating) return;
-            
+
             const input = document.getElementById('addInput');
             const value = parseInt(input.value);
-            
+
             if (isNaN(value) || value < 0 || value > 99) {
                 alert('0-99の数値を入力してください');
                 return;
             }
-            
+
             if (heapData.length >= 31) {
                 alert('ヒープの最大サイズに達しました');
                 return;
             }
-            
+
             isAnimating = true;
             input.value = '';
-            
+
             showStep(`ステップ 1: 値 ${value} を配列の末尾に追加`);
             heapData.push(value);
             renderHeap();
-            
+
             // 新しく追加された要素をハイライト
             const newIndex = heapData.length - 1;
             highlightNode(newIndex);
-            
+
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             showStep(`ステップ 2: ヒープ性質を保つために上向きにヒープ化`);
             updateInfo('➕ Add操作の実行中...', `新しい要素 ${value} をヒープに追加し、親との比較を通じてヒープ性質を維持します。`);
-            
+
             await heapifyUp(newIndex);
-            
+
             showStep('✅ Add操作完了！');
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             hideStep();
             updateInfo();
             isAnimating = false;
@@ -997,7 +1016,7 @@
 
         async function addRandomElement() {
             if (isAnimating) return;
-            
+
             const randomValue = Math.floor(Math.random() * 100);
             document.getElementById('addInput').value = randomValue;
             await addElement();
@@ -1005,15 +1024,15 @@
 
         async function popElement() {
             if (isAnimating || heapData.length === 0) return;
-            
+
             isAnimating = true;
             const rootValue = heapData[0];
-            
+
             showStep(`ステップ 1: ルート要素 ${rootValue} を取得`);
             highlightNode(0);
-            
+
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             if (heapData.length === 1) {
                 heapData.pop();
                 renderHeap();
@@ -1024,25 +1043,25 @@
                 isAnimating = false;
                 return;
             }
-            
+
             showStep(`ステップ 2: 最後の要素 ${heapData[heapData.length - 1]} をルートに移動`);
-            
+
             // 最後の要素をルートに移動
             heapData[0] = heapData[heapData.length - 1];
             heapData.pop();
             renderHeap();
             highlightNode(0);
-            
+
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             showStep('ステップ 3: 下向きにヒープ化してヒープ性質を復元');
             updateInfo('🗑️ Pop操作の実行中...', `ルート要素を削除し、最後の要素を上に移動してヒープ性質を復元します。`);
-            
+
             await heapifyDown(0);
-            
+
             showStep('✅ Pop操作完了！');
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             hideStep();
             updateInfo();
             isAnimating = false;
@@ -1050,35 +1069,35 @@
 
         async function shuffleAndHeapify() {
             if (isAnimating) return;
-            
+
             isAnimating = true;
-            
+
             showStep('ステップ 1: 配列をランダムにシャッフル');
-            
+
             // シャッフル
             for (let i = heapData.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [heapData[i], heapData[j]] = [heapData[j], heapData[i]];
             }
-            
+
             renderHeap();
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             showStep('ステップ 2: Bottom-upヒープ化を実行');
             updateInfo('🔀 Heapify操作の実行中...', 'シャッフルされた配列を効率的にヒープ化します。最後の非葉ノードから開始して逆順に処理します。');
-            
+
             // Bottom-up heapify
             const lastNonLeaf = Math.floor(heapData.length / 2 - 1);
-            
+
             for (let i = lastNonLeaf; i >= 0; i--) {
                 showStep(`ステップ ${lastNonLeaf - i + 3}: インデックス ${i} からヒープ化`);
                 await heapifyDown(i);
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
-            
+
             showStep('✅ Heapify操作完了！');
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             hideStep();
             updateInfo();
             isAnimating = false;
@@ -1086,32 +1105,32 @@
 
         async function buildHeapFromArray() {
             if (isAnimating) return;
-            
+
             isAnimating = true;
-            
+
             // 新しいランダム配列を生成
             const newArray = [];
             const size = 8 + Math.floor(Math.random() * 8); // 8-15要素
-            
+
             for (let i = 0; i < size; i++) {
                 newArray.push(Math.floor(Math.random() * 100));
             }
-            
+
             showStep(`ステップ 1: 新しい配列 [${newArray.join(', ')}] を生成`);
-            
+
             heapData = [...newArray];
             renderHeap();
-            
+
             await new Promise(resolve => setTimeout(resolve, 1500));
-            
+
             showStep('ステップ 2: 配列からヒープを構築');
             updateInfo('🏗️ ヒープ構築中...', '任意の配列から効率的にヒープを構築します。Bottom-upアプローチで O(n) 時間で完了します。');
-            
+
             await buildHeap();
-            
+
             showStep('✅ ヒープ構築完了！');
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             hideStep();
             updateInfo();
             isAnimating = false;
@@ -1119,7 +1138,7 @@
 
         async function buildHeap() {
             const lastNonLeaf = Math.floor(heapData.length / 2 - 1);
-            
+
             for (let i = lastNonLeaf; i >= 0; i--) {
                 await heapifyDown(i);
                 await new Promise(resolve => setTimeout(resolve, 400));
@@ -1128,7 +1147,7 @@
 
         function clearHeap() {
             if (isAnimating) return;
-            
+
             heapData = [];
             renderHeap();
             updateInfo('🧹 ヒープをクリアしました', 'ヒープが空になりました。新しい要素を追加してください。');
@@ -1136,17 +1155,17 @@
 
         async function animateTraversal() {
             if (isAnimating || heapData.length === 0) return;
-            
+
             isAnimating = true;
             showStep('レベル順走査を実行中...');
             updateInfo('🔄 レベル順走査', 'ヒープをレベル順（幅優先）で巡回しています。これは配列のインデックス順と同じです。');
-            
+
             for (let i = 0; i < heapData.length; i++) {
                 clearAllHighlights();
                 highlightNode(i);
                 await new Promise(resolve => setTimeout(resolve, 600));
             }
-            
+
             hideStep();
             updateInfo();
             isAnimating = false;
@@ -1156,7 +1175,7 @@
             if (animationTimeout) {
                 clearTimeout(animationTimeout);
             }
-            
+
             clearAllHighlights();
             hideStep();
             currentlyActive = null;
@@ -1171,7 +1190,7 @@
         }
 
         // イベントリスナー
-        document.getElementById('addInput').addEventListener('keypress', function(e) {
+        document.getElementById('addInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 addElement();
             }
@@ -1180,4 +1199,5 @@
         window.addEventListener('load', initialize);
     </script>
 </body>
+
 </html>
