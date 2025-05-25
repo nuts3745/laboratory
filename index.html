@@ -4,8 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バイナリヒープ可視化ツール</title>
+    <title>lab.nuts3745.dev - Experimental Playground</title>
     <style>
+        :root {
+            --primary-color: #333;
+            --secondary-color: #f8f7f2;
+            --background-color: #f8f7f2;
+            --card-background: #f8f7f2;
+            --text-primary: #333;
+            --text-secondary: #f8f7f2;
+            --border-color: #f8f7f2;
+            --hover-background: #f8f7f2;
+            --accent-color: #1e93c6;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,1190 +25,390 @@
         }
 
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #1e93c6;
-            min-height: 100vh;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .container {
-            background: #f8f7f2;
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 20px;
         }
 
-        h1 {
+        header {
+            padding: 60px 0 80px;
             text-align: center;
-            color: #1e93c6;
-            margin-bottom: 30px;
-            font-size: clamp(1.5rem, 4vw, 2.8rem);
-            font-weight: 800;
-            background: #1e93c6;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
-        .heap-container {
             position: relative;
-            overflow-x: auto;
-            padding: 20px 0;
         }
 
-        .heap-tree {
-            position: relative;
-            width: 100%;
-            min-width: 700px;
-            height: 500px;
-            margin: 0 auto;
-        }
-
-        .node {
+        .back-link {
             position: absolute;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: #1e93c6;
-            color: #f8f7f2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 15px rgba(66, 153, 225, 0.4);
-            z-index: 10;
-        }
-
-        .node:hover {
-            transform: scale(1.15);
-            box-shadow: 0 10px 30px #1e93c6;
-        }
-
-        .node.active {
-            background: #ed8936;
-            transform: scale(1.3);
-            box-shadow: 0 12px 35px rgba(237, 137, 54, 0.7);
-        }
-
-        .node.parent {
-            background: #38a169;
-            transform: scale(1.2);
-            box-shadow: 0 8px 25px rgba(56, 161, 105, 0.6);
-        }
-
-        .node.child {
-            background: #9f7aea;
-            transform: scale(1.2);
-            box-shadow: 0 8px 25px rgba(159, 122, 234, 0.6);
-        }
-
-        .node.comparing {
-            background: #f56565;
-            animation: pulse 0.8s infinite;
-        }
-
-        .node.swapping {
-            background: #e7a233;
-            animation: bounce 0.6s ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1.1);
-            }
-
-            50% {
-                transform: scale(1.3);
-            }
-
-            100% {
-                transform: scale(1.1);
-            }
-        }
-
-        @keyframes bounce {
-
-            0%,
-            100% {
-                transform: translateY(0) scale(1.15);
-            }
-
-            50% {
-                transform: translateY(-10px) scale(1.25);
-            }
-        }
-
-        .edge {
-            position: absolute;
-            background: #1e93c6;
-            border-radius: 3px;
-            transform-origin: left center;
-            z-index: 1;
+            top: 30px;
+            left: 30px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
             opacity: 0.7;
-            transition: all 0.4s ease;
+            transition: opacity 0.3s ease;
         }
 
-        .edge.highlighted {
-            background: #ed8936;
+        .back-link:hover {
             opacity: 1;
-            box-shadow: 0 3px 10px rgba(237, 137, 54, 0.5);
-            height: 4px !important;
         }
 
-        .array-container {
-            margin: 30px 0;
-            text-align: center;
-        }
-
-        .array-title {
-            color: #1e93c6;
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -1px;
             margin-bottom: 20px;
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .array-display {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 6px;
-            margin-bottom: 15px;
-            padding: 0 15px;
-        }
-
-        .array-cell {
-            width: 50px;
-            height: 50px;
-            border: 1px solid #f8f7f2;
-            border-radius: 12px;
+            position: relative;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            background: #1e93c6;
-            color: #f8f7f2;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
         }
 
-        .array-cell:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.3);
-            border-color: #1e93c6;
+        .logo i[data-lucide="test-tube-diagonal"] {
+            margin-right: 15px;
+            color: var(--accent-color);
+            width: 36px;
+            height: 36px;
         }
 
-        .array-cell.active {
-            background: #ed8936;
-            color: #f8f7f2;
-            border-color: #ed8936;
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 8px 25px rgba(237, 137, 54, 0.5);
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background-color: var(--accent-color);
         }
 
-        .array-cell.parent {
-            background: #38a169;
-            color: #f8f7f2;
-            border-color: #38a169;
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        .array-cell.child {
-            background: #9f7aea;
-            color: #f8f7f2;
-            border-color: #9f7aea;
-            transform: translateY(-2px) scale(1.05);
-        }
-
-        .array-cell.comparing {
-            background: #f56565;
-            color: #f8f7f2;
-            animation: pulse 0.8s infinite;
-        }
-
-        .array-cell.swapping {
-            background: #e7a233;
-            color: #f8f7f2;
-            animation: bounce 0.6s ease-in-out;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            opacity: 0.8;
+            font-weight: 300;
             margin-top: 30px;
         }
 
-        .control-group {
+        .sub-brand {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            padding: 40px 0;
+        }
+
+        /* Neumorphism Design */
+        .card {
+            background: var(--card-background);
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(51, 51, 51, 0.05), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-        }
-
-        .control-title {
-            font-weight: 700;
-            color: #1e93c6;
-            font-size: 1.1rem;
-            text-align: center;
-        }
-
-        .btn {
-            background: #1e93c6;
-            color: #f8f7f2;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
-            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px #1e93c6;
-        }
-
-        .btn:active {
+            text-align: center;
+            color: var(--text-primary);
+            border: 1px solid rgba(51, 51, 51, 0.05);
+            cursor: pointer;
+            opacity: 0.9;
             transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+            will-change: transform, box-shadow, opacity;
         }
 
-        .btn.primary {
-            background: #1e93c6;
+        .card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 40px rgba(51, 51, 51, 0.1);
         }
 
-        .btn.danger {
-            background: #f56565;
-        }
-
-        .btn.secondary {
-            color: #1e93c6;
-            background: #f8f7f2
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .input-group {
+        .card-icon {
+            font-size: 3rem;
+            color: var(--accent-color);
+            width: 48px;
+            height: 48px;
             display: flex;
-            gap: 10px;
             align-items: center;
-        }
-
-        .input-field {
-            flex: 1;
-            padding: 10px 12px;
-            border: #f8f7f2;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: #1e93c6;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-        }
-
-        .info-panel {
-            background: #f8f7f2;
-            border-radius: 16px;
-            padding: 25px;
-            margin-top: 25px;
-            border-left: 5px solid #1e93c6;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .info-title {
-            font-weight: 700;
-            color: #1e93c6;
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-        }
-
-        .info-text {
-            color: #333;
-            line-height: 1.7;
-            font-size: 15px;
-        }
-
-        .step-indicator {
-            background: #1e93c6;
-            color: #f8f7f2;
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 16px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .heap-type-selector {
-            display: flex;
-            gap: 10px;
             justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
-        .heap-type-btn {
-            padding: 8px 16px;
-            border: 2px solid #f8f7f2;
-            background: #f8f7f2;
-            color: #1e93c6;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
+        .card-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: currentColor;
+            stroke-width: 1.5;
         }
 
-        .heap-type-btn.active {
-            background: #1e93c6;
-            color: #f8f7f2;
-            border-color: #1e93c6;
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 20s infinite linear;
+        }
+
+        .floating-dot:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-dot:nth-child(2) {
+            top: 20%;
+            left: 80%;
+            animation-delay: 5s;
+        }
+
+        .floating-dot:nth-child(3) {
+            top: 60%;
+            left: 15%;
+            animation-delay: 10s;
+        }
+
+        .floating-dot:nth-child(4) {
+            top: 80%;
+            left: 70%;
+            animation-delay: 15s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(360deg);
+            }
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            opacity: 0.7;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 60px 0 40px;
+            color: var(--text-primary);
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        .tech-pattern {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            opacity: 0.02;
+            pointer-events: none;
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
+            .logo {
+                font-size: 2rem;
             }
 
-            .heap-tree {
-                min-width: 600px;
-                height: 400px;
-            }
-
-            .node {
-                width: 40px;
-                height: 40px;
-                font-size: 14px;
-            }
-
-            .array-cell {
-                width: 45px;
-                height: 45px;
-                font-size: 14px;
-            }
-
-            .controls {
+            .grid {
                 grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .card {
+                padding: 30px 25px;
+            }
+
+            .status-indicator {
+                top: 20px;
+                right: 20px;
             }
         }
 
-        @media (max-width: 480px) {
-            .heap-tree {
-                min-width: 500px;
-                height: 350px;
-            }
-
-            .node {
-                width: 35px;
-                height: 35px;
-                font-size: 12px;
-            }
-
-            .array-cell {
-                width: 40px;
-                height: 40px;
-                font-size: 13px;
-            }
+        .interactive-element {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background: var(--accent-color);
+            pointer-events: none;
+            transition: all 0.3s ease;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>🌳 バイナリヒープ可視化ツール</h1>
-
-        <div class="heap-type-selector">
-            <div class="heap-type-btn active" onclick="setHeapType('max')">📈 最大ヒープ</div>
-            <div class="heap-type-btn" onclick="setHeapType('min')">📉 最小ヒープ</div>
-        </div>
-
-        <div id="stepIndicator" class="step-indicator" style="display: none;">
-            ステップ 1: 初期化中...
-        </div>
-
-        <div class="main-content">
-            <div class="heap-container">
-                <div class="heap-tree" id="heapTree"></div>
-            </div>
-
-            <div class="array-container">
-                <h2 class="array-title">📊 配列表現</h2>
-                <div class="array-display" id="arrayDisplay"></div>
-            </div>
-        </div>
-
-        <div class="controls">
-            <div class="control-group">
-                <div class="control-title">🚀 はじめに</div>
-                <button class="btn primary" onclick="createSampleHeap()">
-                    📋 サンプルヒープを作成
-                </button>
-                <button class="btn" onclick="showEmptyDemo()">
-                    📖 空のヒープから開始
-                </button>
-            </div>
-
-            <div class="control-group">
-                <div class="control-title">🔍 基本操作</div>
-                <button class="btn" onclick="animateTraversal()">
-                    🔄 レベル順走査
-                </button>
-                <button class="btn secondary" onclick="resetAnimation()">
-                    ↩️ リセット
-                </button>
-            </div>
-
-            <div class="control-group">
-                <div class="control-title">➕ 要素の追加</div>
-                <div class="input-group">
-                    <input type="number" id="addInput" class="input-field" placeholder="値を入力" min="0" max="99">
-                    <button class="btn primary" onclick="addElement()">
-                        ➕ Add
-                    </button>
-                </div>
-                <button class="btn primary" onclick="addRandomElement()">
-                    🎲 ランダム追加
-                </button>
-            </div>
-
-            <div class="control-group">
-                <div class="control-title">➖ 要素の削除</div>
-                <button class="btn danger" onclick="popElement()">
-                    🗑️ Pop (ルート削除)
-                </button>
-                <button class="btn danger" onclick="clearHeap()">
-                    🧹 全クリア
-                </button>
-            </div>
-
-            <div class="control-group">
-                <div class="control-title">⚡ ヒープ化</div>
-                <button class="btn secondary" onclick="shuffleAndHeapify()">
-                    🔀 シャッフル → Heapify
-                </button>
-                <button class="btn secondary" onclick="buildHeapFromArray()">
-                    🏗️ 配列からヒープ構築
-                </button>
-            </div>
-        </div>
-
-        <div class="info-panel">
-            <div class="info-title" id="infoTitle">💡 バイナリヒープについて</div>
-            <div class="info-text" id="infoText">
-                バイナリヒープは完全二分木構造で、親ノードが子ノードより大きい（最大ヒープ）または小さい（最小ヒープ）性質を持ちます。<br><br>
-                🖱️ <strong>ツリーのノードまたは配列の要素をクリック</strong>して詳細を確認できます！<br>
-                ⚡ <strong>Add/Pop/Heapify操作</strong>でアルゴリズムの動作を可視化できます！
-            </div>
-        </div>
-
-        <footer style="text-align: center; margin-top: 40px; color: #718096; font-size: 14px;">
-            <small>
-                Copyright © 2025 nuts3745 All rights reserved.
-            </small>
-        </footer>
+    <div class="floating-elements">
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
     </div>
 
+    <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span>EXPERIMENTAL</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <a href="https://nuts3745.dev" class="back-link" rel="noopener noreferrer">←</a>
+            <h1 class="logo">
+                <div class="card-icon">
+                    <i data-lucide="test-tube-diagonal"></i>
+                </div>
+                lab.nuts3745.dev
+            </h1>
+            <div class="tech-pattern">
+                <svg viewBox="0 0 200 200" fill="currentColor">
+                    <circle cx="50" cy="50" r="2" />
+                    <circle cx="150" cy="50" r="2" />
+                    <circle cx="100" cy="100" r="2" />
+                    <circle cx="50" cy="150" r="2" />
+                    <circle cx="150" cy="150" r="2" />
+                    <line x1="50" y1="50" x2="150" y2="50" stroke="currentColor" stroke-width="0.5" />
+                    <line x1="50" y1="50" x2="100" y2="100" stroke="currentColor" stroke-width="0.5" />
+                    <line x1="150" y1="50" x2="100" y2="100" stroke="currentColor" stroke-width="0.5" />
+                    <line x1="100" y1="100" x2="50" y2="150" stroke="currentColor" stroke-width="0.5" />
+                    <line x1="100" y1="100" x2="150" y2="150" stroke="currentColor" stroke-width="0.5" />
+                </svg>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card" onclick="window.location.href='/binary_heap/'">
+                <div class="card-icon">
+                    <i data-lucide="network"></i>
+                </div>
+                <h2 class="">Binary Heap</h2>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <small>Copyright © 2019-2025 nuts3745 All rights reserved.</small>
+        </div>
+    </footer>
+
     <script>
-        let heapData = [];
-        let heapType = 'max'; // 'max' or 'min'
-        let currentlyActive = null;
-        let isAnimating = false;
-        let animationTimeout;
-
-        function setHeapType(type) {
-            if (isAnimating) return;
-
-            heapType = type;
-            document.querySelectorAll('.heap-type-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // ヒープを再構築
-            buildHeap();
-            renderHeap();
-            updateInfo();
-        }
-
-        function compare(a, b) {
-            return heapType === 'max' ? a > b : a < b;
-        }
-
-        function calculatePosition(index, treeWidth, treeHeight) {
-            const level = Math.floor(Math.log2(index + 1));
-            const maxLevel = Math.min(4, Math.floor(Math.log2(heapData.length)));
-            const positionInLevel = index - (Math.pow(2, level) - 1);
-            const nodesInLevel = Math.pow(2, level);
-
-            const x = (treeWidth / (nodesInLevel + 1)) * (positionInLevel + 1) - 22.5;
-            const y = (treeHeight / (maxLevel + 1)) * (level + 1) - 22.5;
-
-            return { x, y };
-        }
-
-        function createEdge(parentPos, childPos) {
-            const dx = childPos.x - parentPos.x;
-            const dy = childPos.y - parentPos.y;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-            const edge = document.createElement('div');
-            edge.className = 'edge';
-            edge.style.width = length + 'px';
-            edge.style.height = '3px';
-            edge.style.left = (parentPos.x + 22.5) + 'px';
-            edge.style.top = (parentPos.y + 22.5) + 'px';
-            edge.style.transform = `rotate(${angle}deg)`;
-
-            return edge;
-        }
-
-        function renderHeap() {
-            const container = document.getElementById('heapTree');
-            container.innerHTML = '';
-
-            if (heapData.length === 0) {
-                // 空のヒープの場合のメッセージ
-                const emptyMessage = document.createElement('div');
-                emptyMessage.style.cssText = `
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    text-align: center;
-                    color: #1e93c6;
-                    font-size: 18px;
-                    font-weight: 600;
-                `;
-                emptyMessage.innerHTML = `
-                    🌳 空のヒープ<br>
-                    <span style="font-size: 14px; font-weight: 400;">要素を追加してください</span>
-                `;
-                container.appendChild(emptyMessage);
-                renderArray();
-                return;
-            }
-
-            const treeWidth = container.offsetWidth;
-            const treeHeight = container.offsetHeight;
-
-            const positions = [];
-
-            // ノードの位置を計算して保存
-            for (let i = 0; i < heapData.length; i++) {
-                positions[i] = calculatePosition(i, treeWidth, treeHeight);
-            }
-
-            // エッジを先に描画
-            for (let i = 1; i < heapData.length; i++) {
-                const parentIndex = Math.floor((i - 1) / 2);
-                const edge = createEdge(positions[parentIndex], positions[i]);
-                edge.id = `edge-${parentIndex}-${i}`;
-                container.appendChild(edge);
-            }
-
-            // ノードを描画
-            for (let i = 0; i < heapData.length; i++) {
-                const node = document.createElement('div');
-                node.className = 'node';
-                node.textContent = heapData[i];
-                node.id = `node-${i}`;
-                node.style.left = positions[i].x + 'px';
-                node.style.top = positions[i].y + 'px';
-
-                node.addEventListener('click', () => {
-                    if (!isAnimating) highlightNode(i);
-                });
-                container.appendChild(node);
-            }
-
-            renderArray();
-        }
-
-        function renderArray() {
-            const arrayDisplay = document.getElementById('arrayDisplay');
-            arrayDisplay.innerHTML = '';
-
-            if (heapData.length === 0) {
-                // 空の配列の場合のメッセージ
-                const emptyMessage = document.createElement('div');
-                emptyMessage.style.cssText = `
-                    color: #1e93c6;
-                    font-size: 16px;
-                    font-weight: 600;
-                    padding: 20px;
-                `;
-                emptyMessage.textContent = '📊 空の配列 - 要素を追加してください';
-                arrayDisplay.appendChild(emptyMessage);
-                return;
-            }
-
-            for (let i = 0; i < heapData.length; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'array-cell';
-                cell.textContent = heapData[i];
-                cell.id = `array-cell-${i}`;
-                cell.addEventListener('click', () => {
-                    if (!isAnimating) highlightNode(i);
-                });
-                arrayDisplay.appendChild(cell);
-            }
-        }
-
-        function highlightNode(index) {
-            clearAllHighlights();
-            currentlyActive = index;
-
-            // ツリーノードをハイライト
-            const treeNode = document.getElementById(`node-${index}`);
-            if (treeNode) treeNode.classList.add('active');
-
-            // 配列セルをハイライト
-            const arrayCell = document.getElementById(`array-cell-${index}`);
-            if (arrayCell) arrayCell.classList.add('active');
-
-            // 親子関係もハイライト
-            const parentIndex = index > 0 ? Math.floor((index - 1) / 2) : null;
-            const leftChild = 2 * index + 1;
-            const rightChild = 2 * index + 2;
-
-            if (parentIndex !== null) {
-                const parentNode = document.getElementById(`node-${parentIndex}`);
-                const parentCell = document.getElementById(`array-cell-${parentIndex}`);
-                if (parentNode) parentNode.classList.add('parent');
-                if (parentCell) parentCell.classList.add('parent');
-            }
-
-            if (leftChild < heapData.length) {
-                const leftNode = document.getElementById(`node-${leftChild}`);
-                const leftCell = document.getElementById(`array-cell-${leftChild}`);
-                if (leftNode) leftNode.classList.add('child');
-                if (leftCell) leftCell.classList.add('child');
-            }
-
-            if (rightChild < heapData.length) {
-                const rightNode = document.getElementById(`node-${rightChild}`);
-                const rightCell = document.getElementById(`array-cell-${rightChild}`);
-                if (rightNode) rightNode.classList.add('child');
-                if (rightCell) rightCell.classList.add('child');
-            }
-
-            updateDetailedInfo(index);
-            highlightRelatedEdges(index);
-        }
-
-        function clearAllHighlights() {
-            document.querySelectorAll('.node').forEach(node => {
-                node.classList.remove('active', 'parent', 'child', 'comparing', 'swapping');
-            });
-
-            document.querySelectorAll('.array-cell').forEach(cell => {
-                cell.classList.remove('active', 'parent', 'child', 'comparing', 'swapping');
-            });
-
-            document.querySelectorAll('.edge').forEach(edge => {
-                edge.classList.remove('highlighted');
-            });
-        }
-
-        function highlightRelatedEdges(index) {
-            document.querySelectorAll('.edge').forEach(edge => {
-                edge.classList.remove('highlighted');
-            });
-
-            if (index > 0) {
-                const parentIndex = Math.floor((index - 1) / 2);
-                const edge = document.getElementById(`edge-${parentIndex}-${index}`);
-                if (edge) edge.classList.add('highlighted');
-            }
-
-            const leftChild = 2 * index + 1;
-            const rightChild = 2 * index + 2;
-
-            if (leftChild < heapData.length) {
-                const leftEdge = document.getElementById(`edge-${index}-${leftChild}`);
-                if (leftEdge) leftEdge.classList.add('highlighted');
-            }
-
-            if (rightChild < heapData.length) {
-                const rightEdge = document.getElementById(`edge-${index}-${rightChild}`);
-                if (rightEdge) rightEdge.classList.add('highlighted');
-            }
-        }
-
-        function updateDetailedInfo(index) {
-            const parentIndex = index > 0 ? Math.floor((index - 1) / 2) : null;
-            const leftChild = 2 * index + 1;
-            const rightChild = 2 * index + 2;
-
-            document.getElementById('infoTitle').textContent = `🎯 ノード ${heapData[index]} の詳細`;
-
-            let infoText = `🎯 <strong>選択中:</strong> ノード ${heapData[index]} (配列インデックス: ${index})<br><br>`;
-
-            if (parentIndex !== null) {
-                infoText += `👆 <strong>親:</strong> ${heapData[parentIndex]} (インデックス: ${parentIndex})<br>`;
-            } else {
-                infoText += `👑 <strong>ルートノード</strong> (親はありません)<br>`;
-            }
-
-            if (leftChild < heapData.length || rightChild < heapData.length) {
-                infoText += `👇 <strong>子:</strong> `;
-                if (leftChild < heapData.length) {
-                    infoText += `左: ${heapData[leftChild]} (${leftChild}) `;
-                }
-                if (rightChild < heapData.length) {
-                    infoText += `右: ${heapData[rightChild]} (${rightChild})`;
-                }
-                infoText += `<br>`;
-            } else {
-                infoText += `🍃 <strong>葉ノード</strong> (子はありません)<br>`;
-            }
-
-            infoText += `<br>💡 <strong>配列での位置関係:</strong><br>`;
-            infoText += `• 親のインデックス: floor((${index}-1)/2) = ${parentIndex !== null ? parentIndex : 'なし'}<br>`;
-            infoText += `• 左の子: 2×${index}+1 = ${leftChild}${leftChild >= heapData.length ? ' (範囲外)' : ''}<br>`;
-            infoText += `• 右の子: 2×${index}+2 = ${rightChild}${rightChild >= heapData.length ? ' (範囲外)' : ''}`;
-
-            document.getElementById('infoText').innerHTML = infoText;
-        }
-
-        function updateInfo(title = '💡 バイナリヒープについて', text = null) {
-            document.getElementById('infoTitle').textContent = title;
-            if (text) {
-                document.getElementById('infoText').innerHTML = text;
-            } else {
-                if (heapData.length === 0) {
-                    document.getElementById('infoText').innerHTML =
-                        `🚀 <strong>ヒープ学習ツールへようこそ！</strong><br><br>
-                        まずは「サンプルヒープを作成」ボタンをクリックして、完成されたヒープの構造を確認してみましょう。<br><br>
-                        または「空のヒープから開始」で、一から要素を追加してヒープを構築する過程を学習できます。<br><br>
-                        💡 <strong>ヒープとは？</strong><br>
-                        • 完全二分木の構造<br>
-                        • 親ノードが子ノードより${heapType === 'max' ? '大きい' : '小さい'}（${heapType === 'max' ? '最大' : '最小'}ヒープ）<br>
-                        • 配列で効率的に表現可能`;
-                } else {
-                    document.getElementById('infoText').innerHTML =
-                        `バイナリヒープは完全二分木構造で、親ノードが子ノードより${heapType === 'max' ? '大きい' : '小さい'}（${heapType === 'max' ? '最大' : '最小'}ヒープ）性質を持ちます。<br><br>
-                        🖱️ <strong>ツリーのノードまたは配列の要素をクリック</strong>して詳細を確認できます！<br>
-                        ⚡ <strong>Add/Pop/Heapify操作</strong>でアルゴリズムの動作を可視化できます！`;
-                }
-            }
-        }
-
-        function showStep(step) {
-            const indicator = document.getElementById('stepIndicator');
-            indicator.textContent = step;
-            indicator.style.display = 'block';
-        }
-
-        function hideStep() {
-            document.getElementById('stepIndicator').style.display = 'none';
-        }
-
-        // ヒープ操作関数
-        function heapifyUp(index) {
-            return new Promise(resolve => {
-                if (index === 0) {
-                    resolve();
-                    return;
-                }
-
-                const parentIndex = Math.floor((index - 1) / 2);
-
-                // 比較をハイライト
-                highlightComparison([index, parentIndex]);
-
-                setTimeout(() => {
-                    if (compare(heapData[index], heapData[parentIndex])) {
-                        // スワップをハイライト
-                        highlightSwap([index, parentIndex]);
-
-                        setTimeout(() => {
-                            // 実際にスワップ
-                            [heapData[index], heapData[parentIndex]] = [heapData[parentIndex], heapData[index]];
-                            renderHeap();
-
-                            setTimeout(() => {
-                                heapifyUp(parentIndex).then(resolve);
-                            }, 300);
-                        }, 600);
-                    } else {
-                        clearAllHighlights();
-                        resolve();
-                    }
-                }, 800);
-            });
-        }
-
-        function heapifyDown(index) {
-            return new Promise(resolve => {
-                const leftChild = 2 * index + 1;
-                const rightChild = 2 * index + 2;
-                let targetIndex = index;
-
-                const candidates = [index];
-                if (leftChild < heapData.length) candidates.push(leftChild);
-                if (rightChild < heapData.length) candidates.push(rightChild);
-
-                // 比較対象をハイライト
-                highlightComparison(candidates);
-
-                setTimeout(() => {
-                    if (leftChild < heapData.length && compare(heapData[leftChild], heapData[targetIndex])) {
-                        targetIndex = leftChild;
-                    }
-
-                    if (rightChild < heapData.length && compare(heapData[rightChild], heapData[targetIndex])) {
-                        targetIndex = rightChild;
-                    }
-
-                    if (targetIndex !== index) {
-                        // スワップをハイライト
-                        highlightSwap([index, targetIndex]);
-
-                        setTimeout(() => {
-                            // 実際にスワップ
-                            [heapData[index], heapData[targetIndex]] = [heapData[targetIndex], heapData[index]];
-                            renderHeap();
-
-                            setTimeout(() => {
-                                heapifyDown(targetIndex).then(resolve);
-                            }, 300);
-                        }, 600);
-                    } else {
-                        clearAllHighlights();
-                        resolve();
-                    }
-                }, 800);
-            });
-        }
-
-        function highlightComparison(indices) {
-            clearAllHighlights();
-            indices.forEach(i => {
-                const node = document.getElementById(`node-${i}`);
-                const cell = document.getElementById(`array-cell-${i}`);
-                if (node) node.classList.add('comparing');
-                if (cell) cell.classList.add('comparing');
-            });
-        }
-
-        function highlightSwap(indices) {
-            clearAllHighlights();
-            indices.forEach(i => {
-                const node = document.getElementById(`node-${i}`);
-                const cell = document.getElementById(`array-cell-${i}`);
-                if (node) node.classList.add('swapping');
-                if (cell) cell.classList.add('swapping');
-            });
-        }
-
-        // 新しい関数を追加
-        async function createSampleHeap() {
-            if (isAnimating) return;
-
-            isAnimating = true;
-
-            showStep('🚀 サンプルヒープを作成しています...');
-            updateInfo('📋 サンプルヒープの作成', 'きれいに整理された最大ヒープのサンプルを作成します。');
-
-            // きれいなヒープ構造のサンプルデータ
-            const sampleData = [90, 80, 70, 60, 75, 65, 50, 40, 30, 55, 45, 35, 25];
-            heapData = [...sampleData];
-
-            renderHeap();
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            showStep('✅ サンプルヒープが完成しました！');
-            updateInfo('🎯 サンプルヒープの説明',
-                `このヒープは<strong>最大ヒープ</strong>の完璧な例です：<br><br>
-                🔝 <strong>ルート（90）が最大値</strong><br>
-                👆 <strong>各親ノードが子ノードより大きい</strong><br>
-                🌳 <strong>完全二分木の構造</strong><br>
-                📊 <strong>配列で効率的に表現</strong><br><br>
-                ノードをクリックして親子関係を確認してみてください！`);
-
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            hideStep();
-            isAnimating = false;
-        }
-
-        async function showEmptyDemo() {
-            if (isAnimating) return;
-
-            isAnimating = true;
-
-            showStep('📖 空のヒープから学習を開始');
-
-            heapData = [];
-            renderHeap();
-
-            updateInfo('🎓 ヒープ学習ガイド',
-                `空のヒープから始めましょう！<br><br>
-                <strong>学習ステップ：</strong><br>
-                1️⃣ 「➕ Add」で要素を一つずつ追加<br>
-                2️⃣ ヒープが自動的に整理される様子を観察<br>
-                3️⃣ 「🗑️ Pop」でルート要素を削除<br>
-                4️⃣ 「🔀 Heapify」で配列からヒープを構築<br><br>
-                💡 <strong>まずは数値を入力してAddボタンを押してみてください！</strong>`);
-
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            hideStep();
-            isAnimating = false;
-        }
-        async function addElement() {
-            if (isAnimating) return;
-
-            const input = document.getElementById('addInput');
-            const value = parseInt(input.value);
-
-            if (isNaN(value) || value < 0 || value > 99) {
-                alert('0-99の数値を入力してください');
-                return;
-            }
-
-            if (heapData.length >= 31) {
-                alert('ヒープの最大サイズに達しました');
-                return;
-            }
-
-            isAnimating = true;
-            input.value = '';
-
-            showStep(`ステップ 1: 値 ${value} を配列の末尾に追加`);
-            heapData.push(value);
-            renderHeap();
-
-            // 新しく追加された要素をハイライト
-            const newIndex = heapData.length - 1;
-            highlightNode(newIndex);
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            showStep(`ステップ 2: ヒープ性質を保つために上向きにヒープ化`);
-            updateInfo('➕ Add操作の実行中...', `新しい要素 ${value} をヒープに追加し、親との比較を通じてヒープ性質を維持します。`);
-
-            await heapifyUp(newIndex);
-
-            showStep('✅ Add操作完了！');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            hideStep();
-            updateInfo();
-            isAnimating = false;
-        }
-
-        async function addRandomElement() {
-            if (isAnimating) return;
-
-            const randomValue = Math.floor(Math.random() * 100);
-            document.getElementById('addInput').value = randomValue;
-            await addElement();
-        }
-
-        async function popElement() {
-            if (isAnimating || heapData.length === 0) return;
-
-            isAnimating = true;
-            const rootValue = heapData[0];
-
-            showStep(`ステップ 1: ルート要素 ${rootValue} を取得`);
-            highlightNode(0);
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            if (heapData.length === 1) {
-                heapData.pop();
-                renderHeap();
-                showStep('✅ Pop操作完了！');
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                hideStep();
-                updateInfo();
-                isAnimating = false;
-                return;
-            }
-
-            showStep(`ステップ 2: 最後の要素 ${heapData[heapData.length - 1]} をルートに移動`);
-
-            // 最後の要素をルートに移動
-            heapData[0] = heapData[heapData.length - 1];
-            heapData.pop();
-            renderHeap();
-            highlightNode(0);
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            showStep('ステップ 3: 下向きにヒープ化してヒープ性質を復元');
-            updateInfo('🗑️ Pop操作の実行中...', `ルート要素を削除し、最後の要素を上に移動してヒープ性質を復元します。`);
-
-            await heapifyDown(0);
-
-            showStep('✅ Pop操作完了！');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            hideStep();
-            updateInfo();
-            isAnimating = false;
-        }
-
-        async function shuffleAndHeapify() {
-            if (isAnimating) return;
-
-            isAnimating = true;
-
-            showStep('ステップ 1: 配列をランダムにシャッフル');
-
-            // シャッフル
-            for (let i = heapData.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [heapData[i], heapData[j]] = [heapData[j], heapData[i]];
-            }
-
-            renderHeap();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            showStep('ステップ 2: Bottom-upヒープ化を実行');
-            updateInfo('🔀 Heapify操作の実行中...', 'シャッフルされた配列を効率的にヒープ化します。最後の非葉ノードから開始して逆順に処理します。');
-
-            // Bottom-up heapify
-            const lastNonLeaf = Math.floor(heapData.length / 2 - 1);
-
-            for (let i = lastNonLeaf; i >= 0; i--) {
-                showStep(`ステップ ${lastNonLeaf - i + 3}: インデックス ${i} からヒープ化`);
-                await heapifyDown(i);
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            showStep('✅ Heapify操作完了！');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            hideStep();
-            updateInfo();
-            isAnimating = false;
-        }
-
-        async function buildHeapFromArray() {
-            if (isAnimating) return;
-
-            isAnimating = true;
-
-            // 新しいランダム配列を生成
-            const newArray = [];
-            const size = 8 + Math.floor(Math.random() * 8); // 8-15要素
-
-            for (let i = 0; i < size; i++) {
-                newArray.push(Math.floor(Math.random() * 100));
-            }
-
-            showStep(`ステップ 1: 新しい配列 [${newArray.join(', ')}] を生成`);
-
-            heapData = [...newArray];
-            renderHeap();
-
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            showStep('ステップ 2: 配列からヒープを構築');
-            updateInfo('🏗️ ヒープ構築中...', '任意の配列から効率的にヒープを構築します。Bottom-upアプローチで O(n) 時間で完了します。');
-
-            await buildHeap();
-
-            showStep('✅ ヒープ構築完了！');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            hideStep();
-            updateInfo();
-            isAnimating = false;
-        }
-
-        async function buildHeap() {
-            const lastNonLeaf = Math.floor(heapData.length / 2 - 1);
-
-            for (let i = lastNonLeaf; i >= 0; i--) {
-                await heapifyDown(i);
-                await new Promise(resolve => setTimeout(resolve, 400));
-            }
-        }
-
-        function clearHeap() {
-            if (isAnimating) return;
-
-            heapData = [];
-            renderHeap();
-            updateInfo('🧹 ヒープをクリアしました', 'ヒープが空になりました。新しい要素を追加してください。');
-        }
-
-        async function animateTraversal() {
-            if (isAnimating || heapData.length === 0) return;
-
-            isAnimating = true;
-            showStep('レベル順走査を実行中...');
-            updateInfo('🔄 レベル順走査', 'ヒープをレベル順（幅優先）で巡回しています。これは配列のインデックス順と同じです。');
-
-            for (let i = 0; i < heapData.length; i++) {
-                clearAllHighlights();
-                highlightNode(i);
-                await new Promise(resolve => setTimeout(resolve, 600));
-            }
-
-            hideStep();
-            updateInfo();
-            isAnimating = false;
-        }
-
-        function resetAnimation() {
-            if (animationTimeout) {
-                clearTimeout(animationTimeout);
-            }
-
-            clearAllHighlights();
-            hideStep();
-            currentlyActive = null;
-            isAnimating = false;
-            updateInfo();
-        }
-
-        // 初期化
-        function initialize() {
-            renderHeap();
-            updateInfo();
-        }
-
-        // イベントリスナー
-        document.getElementById('addInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                addElement();
-            }
+        // Lucide icons initialization
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.js';
+        script.onload = function () {
+            lucide.createIcons();
+        };
+        document.head.appendChild(script);
+
+        // インタラクティブな背景効果
+        document.addEventListener('mousemove', (e) => {
+            const interactiveEl = document.createElement('div');
+            interactiveEl.className = 'interactive-element';
+            interactiveEl.style.left = e.clientX + 'px';
+            interactiveEl.style.top = e.clientY + 'px';
+
+            document.body.appendChild(interactiveEl);
+
+            setTimeout(() => {
+                interactiveEl.style.width = '20px';
+                interactiveEl.style.height = '20px';
+                interactiveEl.style.marginLeft = '-10px';
+                interactiveEl.style.marginTop = '-10px';
+                interactiveEl.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => {
+                document.body.removeChild(interactiveEl);
+            }, 350);
         });
 
-        window.addEventListener('load', initialize);
+        // カードのホバー効果強化
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'var(--accent-color)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = 'rgba(51, 51, 51, 0.05)';
+            });
+        });
+
+        // 初期化
+        generateBinaryBackground();
+
+        // ページロード時のアニメーション
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
     </script>
 </body>
 
