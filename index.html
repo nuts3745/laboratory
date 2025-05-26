@@ -228,7 +228,6 @@
             opacity: 0.95;
             transform: translateY(0) scale(1);
             will-change: transform, box-shadow, opacity;
-            border: 1px solid var(--border-color);
         }
 
         .card::before {
@@ -397,7 +396,8 @@
         .card h2 {
             font-size: 1.4rem;
             font-weight: 500;
-            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            color: var(--accent-color);
             margin-top: 15px;
             padding: 12px 24px;
             border-radius: 12px;
@@ -417,6 +417,31 @@
                 -8px -8px 16px var(--shadow-light),
                 inset 2px 2px 4px var(--shadow-inset-light),
                 inset -2px -2px 4px var(--shadow-inset-dark);
+        }}
+        
+        /* aタグ用の追加スタイル */
+        a.card {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        a.card:hover,
+        a.card:visited,
+        a.card:active,
+        a.card:focus {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        /* ホバー効果も調整 */
+        a.card:hover h2 {
+            transform: translateY(-1px);
+            box-shadow:
+                8px 8px 16px var(--shadow-dark),
+                -8px -8px 16px var(--shadow-light),
+                inset 1px 1px 2px var(--shadow-inset-light),
+                inset -1px -1px 2px var(--shadow-inset-dark);
         }
 
         @media (max-width: 768px) {
@@ -587,10 +612,10 @@
 
         <div class="grid">
             <a href="/binary_heap/" class="card" rel="noopener noreferrer">
-              <div class="card-icon">
-                <i data-lucide="network"></i>
-              </div>
-              <h2>Binary Heap</h2>
+                <div class="card-icon">
+                    <i data-lucide="network"></i>
+                </div>
+                <h2>Binary Heap</h2>
             </a>
         </div>
     </div>
