@@ -15,7 +15,6 @@
             --text-secondary: #718096;
             --border-color: rgba(255, 255, 255, 0.8);
             --hover-background: #edf2f7;
-            /* --accent-color: #667eea; */
             --accent-color: #1e93c6;
             --shadow-light: rgba(255, 255, 255, 0.9);
             --shadow-dark: rgba(174, 188, 212, 0.4);
@@ -130,11 +129,6 @@
             padding: 20px;
             border-radius: 16px;
             background: var(--background-color);
-            box-shadow:
-                12px 12px 24px var(--shadow-dark),
-                -12px -12px 24px var(--shadow-light),
-                inset 4px 4px 8px var(--shadow-inset-light),
-                inset -4px -4px 8px var(--shadow-inset-dark);
             margin: 0 auto 30px;
             max-width: fit-content;
         }
@@ -382,17 +376,6 @@
                 inset -2px -2px 4px var(--shadow-inset-dark);
         }
 
-        .tech-pattern {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            opacity: 0.02;
-            pointer-events: none;
-        }
-
         .card h2 {
             font-size: 1.4rem;
             font-weight: 500;
@@ -402,12 +385,10 @@
             padding: 12px 24px;
             border-radius: 12px;
             background: var(--background-color);
-            box-shadow:
-                6px 6px 12px var(--shadow-dark),
-                -6px -6px 12px var(--shadow-light),
-                inset 1px 1px 2px var(--shadow-inset-light),
-                inset -1px -1px 2px var(--shadow-inset-dark);
             transition: all 0.3s ease;
+            text-shadow:
+                2px 2px 4px var(--shadow-dark),
+                -1px -1px 2px var(--shadow-light);
         }
 
         .card:hover h2 {
