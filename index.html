@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>lab.nuts3745.dev - Experimental Playground</title>
     <style>
         :root {
@@ -606,15 +606,13 @@
         <small>Copyright © 2019-2025 nuts3745 All rights reserved.</small>
     </footer>
 
+    // Lucide icons initialization
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        // Lucide icons initialization
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.js';
-        script.onload = function () {
-            lucide.createIcons();
-        };
-        document.head.appendChild(script);
+        lucide.createIcons();
+    </script>
 
+    <script>
         // Neumorphicマウス軌跡エフェクト（位置修正版）
         document.addEventListener('mousemove', (e) => {
             const interactiveEl = document.createElement('div');
