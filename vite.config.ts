@@ -1,16 +1,8 @@
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { cloudflare } from "@cloudflare/vite-plugin";
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-
+// https://vite.dev/config/
 export default defineConfig({
-    build: {
-        rollupOptions: {
-            input: {
-                main: resolve(__dirname, 'index.html'),
-                binary_heap: resolve(__dirname, 'binary_heap/index.html'),
-            },
-        },
-    },
+    plugins: [react(), cloudflare()],
 })

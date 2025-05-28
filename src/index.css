@@ -81,6 +81,7 @@ header {
 	position: relative;
 	background: var(--background-color);
 	border-radius: 20px;
+	padding: 100px 100px 80px 100px;
 	margin: 20px;
 	box-shadow:
 		15px 15px 30px var(--shadow-dark),
@@ -91,7 +92,6 @@ header {
 
 .back-link {
 	position: absolute;
-	z-index: 10;
 	top: 30px;
 	left: 30px;
 	color: var(--text-primary);
@@ -117,26 +117,24 @@ header {
 }
 
 .logo {
-	z-index: 8;
-	font-size: 2.8rem;
-	font-weight: 300;
-	letter-spacing: -1px;
-	margin-bottom: 30px;
 	position: relative;
-	font-family: "Courier New", monospace;
-	color: var(--accent-color);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	text-shadow: 2px 2px 4px var(--shadow-dark), -1px -1px 2px var(--shadow-light);
-	padding: 20px;
 	border-radius: 16px;
 	background: var(--background-color);
-	max-width: fit-content;
+}
+
+.logo-text {
+	font-size: 2rem;
+	font-weight: 300;
+	letter-spacing: -1px;
+	font-family: "Courier New", monospace;
+	color: var(--accent-color);
+	text-shadow: 2px 2px 4px var(--shadow-dark), -1px -1px 2px var(--shadow-light);
 }
 
 .logo i[data-lucide="test-tube-diagonal"] {
-	z-index: 9;
 	margin-right: 20px;
 	color: var(--accent-color);
 	width: 42px;
@@ -425,7 +423,7 @@ a.card:hover h2 {
 		inset -1px -1px 2px var(--shadow-inset-dark);
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
 	.container {
 		margin: 10px;
 		border-radius: 16px;
@@ -554,7 +552,7 @@ a.card:hover h2 {
 		padding: 8px 12px;
 		font-size: 0.8rem;
 	}
-}
+} */
 
 .interactive-element {
 	position: absolute;

@@ -2,42 +2,14 @@
 <html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>lab.nuts3745.dev - Experimental Playground</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="index.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <div class="status-indicator">
-                <div class="status-dot"></div>
-                <span>EXPERIMENTAL</span>
-            </div>
-            <a href="https://nuts3745.dev" class="back-link" rel="noopener noreferrer">←</a>
-            <h1 class="logo">
-                <div class="card-icon">
-                    <i data-lucide="test-tube-diagonal"></i>
-                </div>
-                lab.nuts3745.dev
-            </h1>
-        </header>
-
-        <div class="grid">
-            <a href="/binary_heap/" class="card" rel="noopener noreferrer">
-                <div class="card-icon">
-                    <i data-lucide="network"></i>
-                </div>
-                <h2>Binary Heap</h2>
-            </a>
-        </div>
-    </div>
-
-    <footer>
-        <small>Copyright © 2019-2025 nuts3745 All rights reserved.</small>
-    </footer>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>
