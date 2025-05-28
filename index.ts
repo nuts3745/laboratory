@@ -12,7 +12,7 @@ import { setupMouseTrailEffect } from './modules/effects.js';
 function initializeApp() {
     // Lucideアイコンの初期化
     initializeLucideIcons();
-    
+
     // カードのホバー効果設定
     setupCardHoverEffects();
 }

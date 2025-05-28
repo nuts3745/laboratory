@@ -8,6 +8,11 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/node": "^22.15.21",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "lucide": "^0.511.0",
+    "typescript": "^5.8.3"
   }
 }
