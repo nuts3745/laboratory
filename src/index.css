@@ -423,7 +423,7 @@ a.card:hover h2 {
 		inset -1px -1px 2px var(--shadow-inset-dark);
 }
 
-/* @media (max-width: 768px) {
+@media (max-width: 768px) {
 	.container {
 		margin: 10px;
 		border-radius: 16px;
@@ -435,7 +435,6 @@ a.card:hover h2 {
 	}
 
 	header {
-		padding: 60px 20px 80px;
 		margin: 10px;
 		border-radius: 16px;
 	}
@@ -504,7 +503,7 @@ a.card:hover h2 {
 		border-radius: 10px;
 	}
 }
-
+/* 
 @media (max-width: 480px) {
 	.status-indicator {
 		top: 20px;
@@ -524,12 +523,6 @@ a.card:hover h2 {
 	.logo {
 		font-size: 1.8rem;
 		padding: 12px;
-	}
-
-	.logo i[data-lucide="test-tube-diagonal"] {
-		width: 32px;
-		height: 32px;
-		margin-right: 12px;
 	}
 
 	.container {
