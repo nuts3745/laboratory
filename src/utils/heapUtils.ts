@@ -1,35 +1,50 @@
-import type { HeapType, HeapOperationResult } from '../types/heap.js';
+import type { HeapOperationResult, HeapType } from "../types/heap.js";
 
 /**
  * Heap utility operations interface
  * ヒープ操作のインターフェース定義
  */
 export interface HeapOperations {
-  compare(a: number, b: number, type: HeapType): number;
-  isValidHeap(data: number[], type: HeapType): boolean;
-  getParentIndex(index: number): number | null;
-  getLeftChildIndex(index: number): number;
-  getRightChildIndex(index: number): number;
-  getChildrenIndices(index: number, heapSize: number): number[];
-  heapifyUp(data: number[], index: number, type: HeapType): {
-    newData: number[];
-    swaps: Array<{ from: number; to: number }>;
-  };
-  heapifyDown(data: number[], index: number, type: HeapType): {
-    newData: number[];
-    swaps: Array<{ from: number; to: number }>;
-  };
-  insert(data: number[], value: number, type: HeapType): HeapOperationResult;
-  extractRoot(data: number[], type: HeapType): HeapOperationResult;
-  buildHeap(data: number[], type: HeapType): {
-    newData: number[];
-    operations: Array<{ index: number; swaps: Array<{ from: number; to: number }> }>;
-  };
-  generateRandomHeap(size?: number): number[];
-  calculateNodePosition(index: number, containerWidth: number, containerHeight: number): {
-    x: number;
-    y: number;
-  };
+	compare(a: number, b: number, type: HeapType): number;
+	isValidHeap(data: number[], type: HeapType): boolean;
+	getParentIndex(index: number): number | null;
+	getLeftChildIndex(index: number): number;
+	getRightChildIndex(index: number): number;
+	getChildrenIndices(index: number, heapSize: number): number[];
+	heapifyUp(
+		data: number[],
+		index: number,
+		type: HeapType,
+	): {
+		newData: number[];
+		swaps: { from: number; to: number }[];
+	};
+	heapifyDown(
+		data: number[],
+		index: number,
+		type: HeapType,
+	): {
+		newData: number[];
+		swaps: { from: number; to: number }[];
+	};
+	insert(data: number[], value: number, type: HeapType): HeapOperationResult;
+	extractRoot(data: number[], type: HeapType): HeapOperationResult;
+	buildHeap(
+		data: number[],
+		type: HeapType,
+	): {
+		newData: number[];
+		operations: { index: number; swaps: { from: number; to: number }[] }[];
+	};
+	generateRandomHeap(size?: number): number[];
+	calculateNodePosition(
+		index: number,
+		containerWidth: number,
+		containerHeight: number,
+	): {
+		x: number;
+		y: number;
+	};
 }
 
 /**
@@ -37,214 +52,256 @@ export interface HeapOperations {
  * クロージャを使用したヒープ操作の実装
  */
 export const createBinaryHeapUtils = (): HeapOperations => {
-  const compare = (a: number, b: number, type: HeapType): number => {
-    return type === 'max' ? b - a : a - b;
-  };
+	const compare = (a: number, b: number, type: HeapType): number => {
+		return type === "max" ? b - a : a - b;
+	};
 
-  const getParentIndex = (index: number): number | null => {
-    if (index === 0) return null;
-    return Math.floor((index - 1) / 2);
-  };
+	const getParentIndex = (index: number): number | null => {
+		if (index === 0) return null;
+		return Math.floor((index - 1) / 2);
+	};
 
-  const getLeftChildIndex = (index: number): number => {
-    return 2 * index + 1;
-  };
+	const getLeftChildIndex = (index: number): number => {
+		return 2 * index + 1;
+	};
 
-  const getRightChildIndex = (index: number): number => {
-    return 2 * index + 2;
-  };
+	const getRightChildIndex = (index: number): number => {
+		return 2 * index + 2;
+	};
 
-  const getChildrenIndices = (index: number, heapSize: number): number[] => {
-    const children: number[] = [];
-    const leftChild = getLeftChildIndex(index);
-    const rightChild = getRightChildIndex(index);
+	const getChildrenIndices = (index: number, heapSize: number): number[] => {
+		const children: number[] = [];
+		const leftChild = getLeftChildIndex(index);
+		const rightChild = getRightChildIndex(index);
 
-    if (leftChild < heapSize) children.push(leftChild);
-    if (rightChild < heapSize) children.push(rightChild);
+		if (leftChild < heapSize) children.push(leftChild);
+		if (rightChild < heapSize) children.push(rightChild);
 
-    return children;
-  };
+		return children;
+	};
 
-  const isValidHeap = (data: number[], type: HeapType): boolean => {
-    for (let i = 0; i < Math.floor(data.length / 2); i++) {
-      const leftChild = 2 * i + 1;
-      const rightChild = 2 * i + 2;
+	const isValidHeap = (data: number[], type: HeapType): boolean => {
+		for (let i = 0; i < Math.floor(data.length / 2); i++) {
+			const leftChild = 2 * i + 1;
+			const rightChild = 2 * i + 2;
 
-      if (leftChild < data.length && compare(data[i], data[leftChild], type) > 0) {
-        return false;
-      }
-      if (rightChild < data.length && compare(data[i], data[rightChild], type) > 0) {
-        return false;
-      }
-    }
-    return true;
-  };
+			if (
+				leftChild < data.length &&
+				compare(data[i], data[leftChild], type) > 0
+			) {
+				return false;
+			}
+			if (
+				rightChild < data.length &&
+				compare(data[i], data[rightChild], type) > 0
+			) {
+				return false;
+			}
+		}
+		return true;
+	};
 
-  const heapifyUp = (data: number[], index: number, type: HeapType): {
-    newData: number[];
-    swaps: Array<{ from: number; to: number }>;
-  } => {
-    const result = [...data];
-    const swaps: Array<{ from: number; to: number }> = [];
-    let currentIndex = index;
+	const heapifyUp = (
+		data: number[],
+		index: number,
+		type: HeapType,
+	): {
+		newData: number[];
+		swaps: { from: number; to: number }[];
+	} => {
+		const result = [...data];
+		const swaps: { from: number; to: number }[] = [];
+		let currentIndex = index;
 
-    while (currentIndex > 0) {
-      const parentIndex = getParentIndex(currentIndex);
-      if (parentIndex === null) break;
-      
-      if (compare(result[parentIndex], result[currentIndex], type) <= 0) {
-        break;
-      }
+		while (currentIndex > 0) {
+			const parentIndex = getParentIndex(currentIndex);
+			if (parentIndex === null) break;
 
-      // Swap
-      [result[parentIndex], result[currentIndex]] = [result[currentIndex], result[parentIndex]];
-      swaps.push({ from: currentIndex, to: parentIndex });
-      currentIndex = parentIndex;
-    }
+			if (compare(result[parentIndex], result[currentIndex], type) <= 0) {
+				break;
+			}
 
-    return { newData: result, swaps };
-  };
+			// Swap
+			[result[parentIndex], result[currentIndex]] = [
+				result[currentIndex],
+				result[parentIndex],
+			];
+			swaps.push({ from: currentIndex, to: parentIndex });
+			currentIndex = parentIndex;
+		}
 
-  const heapifyDown = (data: number[], index: number, type: HeapType): {
-    newData: number[];
-    swaps: Array<{ from: number; to: number }>;
-  } => {
-    const result = [...data];
-    const swaps: Array<{ from: number; to: number }> = [];
-    let currentIndex = index;
+		return { newData: result, swaps };
+	};
 
-    while (true) {
-      const leftChild = getLeftChildIndex(currentIndex);
-      const rightChild = getRightChildIndex(currentIndex);
-      let targetIndex = currentIndex;
+	const heapifyDown = (
+		data: number[],
+		index: number,
+		type: HeapType,
+	): {
+		newData: number[];
+		swaps: { from: number; to: number }[];
+	} => {
+		const result = [...data];
+		const swaps: { from: number; to: number }[] = [];
+		let currentIndex = index;
 
-      if (leftChild < result.length && 
-          compare(result[targetIndex], result[leftChild], type) > 0) {
-        targetIndex = leftChild;
-      }
+		while (true) {
+			const leftChild = getLeftChildIndex(currentIndex);
+			const rightChild = getRightChildIndex(currentIndex);
+			let targetIndex = currentIndex;
 
-      if (rightChild < result.length && 
-          compare(result[targetIndex], result[rightChild], type) > 0) {
-        targetIndex = rightChild;
-      }
+			if (
+				leftChild < result.length &&
+				compare(result[targetIndex], result[leftChild], type) > 0
+			) {
+				targetIndex = leftChild;
+			}
 
-      if (targetIndex === currentIndex) {
-        break;
-      }
+			if (
+				rightChild < result.length &&
+				compare(result[targetIndex], result[rightChild], type) > 0
+			) {
+				targetIndex = rightChild;
+			}
 
-      // Swap
-      [result[currentIndex], result[targetIndex]] = [result[targetIndex], result[currentIndex]];
-      swaps.push({ from: currentIndex, to: targetIndex });
-      currentIndex = targetIndex;
-    }
+			if (targetIndex === currentIndex) {
+				break;
+			}
 
-    return { newData: result, swaps };
-  };
+			// Swap
+			[result[currentIndex], result[targetIndex]] = [
+				result[targetIndex],
+				result[currentIndex],
+			];
+			swaps.push({ from: currentIndex, to: targetIndex });
+			currentIndex = targetIndex;
+		}
 
-  const insert = (data: number[], value: number, type: HeapType): HeapOperationResult => {
-    if (data.length >= 31) { // Reasonable limit for visualization
-      return {
-        success: false,
-        message: 'ヒープが満杯です（最大31要素）',
-        newHeap: data
-      };
-    }
+		return { newData: result, swaps };
+	};
 
-    const newHeap = [...data, value];
-    const { newData } = heapifyUp(newHeap, newHeap.length - 1, type);
+	const insert = (
+		data: number[],
+		value: number,
+		type: HeapType,
+	): HeapOperationResult => {
+		if (data.length >= 31) {
+			// Reasonable limit for visualization
+			return {
+				success: false,
+				message: "ヒープが満杯です（最大31要素）",
+				newHeap: data,
+			};
+		}
 
-    return {
-      success: true,
-      message: `要素 ${value} を追加しました`,
-      newHeap: newData
-    };
-  };
+		const newHeap = [...data, value];
+		const { newData } = heapifyUp(newHeap, newHeap.length - 1, type);
 
-  const extractRoot = (data: number[], type: HeapType): HeapOperationResult => {
-    if (data.length === 0) {
-      return {
-        success: false,
-        message: 'ヒープが空です',
-        newHeap: data
-      };
-    }
+		return {
+			success: true,
+			message: `要素 ${value.toString()} を追加しました`,
+			newHeap: newData,
+		};
+	};
 
-    const root = data[0];
-    if (data.length === 1) {
-      return {
-        success: true,
-        message: `要素 ${root} を削除しました`,
-        newHeap: [],
-        removedValue: root
-      };
-    }
+	const extractRoot = (data: number[], type: HeapType): HeapOperationResult => {
+		if (data.length === 0) {
+			return {
+				success: false,
+				message: "ヒープが空です",
+				newHeap: data,
+			};
+		}
 
-    // Move last element to root and heapify down
-    const newHeap = [data[data.length - 1], ...data.slice(1, -1)];
-    const { newData } = heapifyDown(newHeap, 0, type);
+		const root = data[0];
+		if (data.length === 1) {
+			return {
+				success: true,
+				message: `要素 ${root.toString()} を削除しました`,
+				newHeap: [],
+				removedValue: root,
+			};
+		}
 
-    return {
-      success: true,
-      message: `要素 ${root} を削除しました`,
-      newHeap: newData,
-      removedValue: root
-    };
-  };
+		// Move last element to root and heapify down
+		const newHeap = [data[data.length - 1], ...data.slice(1, -1)];
+		const { newData } = heapifyDown(newHeap, 0, type);
 
-  const buildHeap = (data: number[], type: HeapType): {
-    newData: number[];
-    operations: Array<{ index: number; swaps: Array<{ from: number; to: number }> }>;
-  } => {
-    const result = [...data];
-    const operations: Array<{ index: number; swaps: Array<{ from: number; to: number }> }> = [];
+		return {
+			success: true,
+			message: `要素 ${root.toString()} を削除しました`,
+			newHeap: newData,
+			removedValue: root,
+		};
+	};
 
-    // Start from last non-leaf node and heapify down
-    for (let i = Math.floor(result.length / 2) - 1; i >= 0; i--) {
-      const { newData, swaps } = heapifyDown(result, i, type);
-      result.splice(0, result.length, ...newData);
-      operations.push({ index: i, swaps });
-    }
+	const buildHeap = (
+		data: number[],
+		type: HeapType,
+	): {
+		newData: number[];
+		operations: { index: number; swaps: { from: number; to: number }[] }[];
+	} => {
+		const result = [...data];
+		const operations: {
+			index: number;
+			swaps: { from: number; to: number }[];
+		}[] = [];
 
-    return { newData: result, operations };
-  };
+		// Start from last non-leaf node and heapify down
+		for (let i = Math.floor(result.length / 2) - 1; i >= 0; i--) {
+			const { newData, swaps } = heapifyDown(result, i, type);
+			result.splice(0, result.length, ...newData);
+			operations.push({ index: i, swaps });
+		}
 
-  const generateRandomHeap = (size = 10) => {
-    return Array.from({ length: size }, () => Math.floor(Math.random() * 100) + 1);
-  };
+		return { newData: result, operations };
+	};
 
-  const calculateNodePosition = (index: number, containerWidth: number, containerHeight: number): {
-    x: number;
-    y: number;
-  } => {
-    const level = Math.floor(Math.log2(index + 1));
-    const maxLevel = 4; // Reasonable depth for visualization
-    const nodesInLevel = 2 ** level;
-    const positionInLevel = index - (2 ** level - 1);
+	const generateRandomHeap = (size = 10) => {
+		return Array.from(
+			{ length: size },
+			() => Math.floor(Math.random() * 100) + 1,
+		);
+	};
 
-    const levelHeight = containerHeight / (maxLevel + 1);
-    const y = levelHeight * (level + 1);
+	const calculateNodePosition = (
+		index: number,
+		containerWidth: number,
+		containerHeight: number,
+	): {
+		x: number;
+		y: number;
+	} => {
+		const level = Math.floor(Math.log2(index + 1));
+		const maxLevel = 4; // Reasonable depth for visualization
+		const nodesInLevel = 2 ** level;
+		const positionInLevel = index - (2 ** level - 1);
 
-    const levelWidth = containerWidth / nodesInLevel;
-    const x = levelWidth * (positionInLevel + 0.5);
+		const levelHeight = containerHeight / (maxLevel + 1);
+		const y = levelHeight * (level + 1);
 
-    return { x, y };
-  };
+		const levelWidth = containerWidth / nodesInLevel;
+		const x = levelWidth * (positionInLevel + 0.5);
 
-  return {
-    compare,
-    isValidHeap,
-    getParentIndex,
-    getLeftChildIndex,
-    getRightChildIndex,
-    getChildrenIndices,
-    heapifyUp,
-    heapifyDown,
-    insert,
-    extractRoot,
-    buildHeap,
-    generateRandomHeap,
-    calculateNodePosition
-  };
+		return { x, y };
+	};
+
+	return {
+		compare,
+		isValidHeap,
+		getParentIndex,
+		getLeftChildIndex,
+		getRightChildIndex,
+		getChildrenIndices,
+		heapifyUp,
+		heapifyDown,
+		insert,
+		extractRoot,
+		buildHeap,
+		generateRandomHeap,
+		calculateNodePosition,
+	};
 };
 
 /**

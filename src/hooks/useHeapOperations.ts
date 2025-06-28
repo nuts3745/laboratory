@@ -1,249 +1,293 @@
-import { useCallback } from 'react';
-import { BinaryHeapUtils } from '../utils/heapUtils.js';
-import type { HeapType } from '../types/heap.js';
-import type { HeapifyStep } from './useAdvancedAnimation.js';
+import { useCallback } from "react";
+import type { HeapType } from "../types/heap.js";
+import { BinaryHeapUtils } from "../utils/heapUtils.js";
+import type { HeapifyStep } from "./useAdvancedAnimation.js";
 
 /**
  * Custom hook for advanced heap operations
  * 高度なビジネスロジックとアニメーション対応の操作を提供
  */
 export function useHeapOperations() {
+	const insertElement = useCallback(
+		(data: number[], value: number, type: HeapType) => {
+			return BinaryHeapUtils.insert(data, value, type);
+		},
+		[],
+	);
 
-    const insertElement = useCallback((data: number[], value: number, type: HeapType) => {
-        return BinaryHeapUtils.insert(data, value, type);
-    }, []);
+	const extractRoot = useCallback((data: number[], type: HeapType) => {
+		return BinaryHeapUtils.extractRoot(data, type);
+	}, []);
 
-    const extractRoot = useCallback((data: number[], type: HeapType) => {
-        return BinaryHeapUtils.extractRoot(data, type);
-    }, []);
+	const buildHeap = useCallback((data: number[], type: HeapType) => {
+		return BinaryHeapUtils.buildHeap(data, type);
+	}, []);
 
-    const buildHeap = useCallback((data: number[], type: HeapType) => {
-        return BinaryHeapUtils.buildHeap(data, type);
-    }, []);
+	const validateHeap = useCallback((data: number[], type: HeapType) => {
+		return BinaryHeapUtils.isValidHeap(data, type);
+	}, []);
 
-    const validateHeap = useCallback((data: number[], type: HeapType) => {
-        return BinaryHeapUtils.isValidHeap(data, type);
-    }, []);
+	const generateRandomData = useCallback((size = 10) => {
+		return BinaryHeapUtils.generateRandomHeap(size);
+	}, []);
 
-    const generateRandomData = useCallback((size = 10) => {
-        return BinaryHeapUtils.generateRandomHeap(size);
-    }, []);
+	const heapifyUp = useCallback(
+		(data: number[], index: number, type: HeapType) => {
+			return BinaryHeapUtils.heapifyUp(data, index, type);
+		},
+		[],
+	);
 
-    const heapifyUp = useCallback((data: number[], index: number, type: HeapType) => {
-        return BinaryHeapUtils.heapifyUp(data, index, type);
-    }, []);
+	const heapifyDown = useCallback(
+		(data: number[], index: number, type: HeapType) => {
+			return BinaryHeapUtils.heapifyDown(data, index, type);
+		},
+		[],
+	);
 
-    const heapifyDown = useCallback((data: number[], index: number, type: HeapType) => {
-        return BinaryHeapUtils.heapifyDown(data, index, type);
-    }, []);
+	const shuffleArray = useCallback((data: number[]) => {
+		const shuffled = [...data];
+		for (let i = shuffled.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
+		return shuffled;
+	}, []);
 
-    const shuffleArray = useCallback((data: number[]) => {
-        const shuffled = [...data];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }, []);
+	const generateSampleHeap = useCallback((type: HeapType = "max") => {
+		const sampleData = [50, 30, 70, 20, 10, 60, 90, 15, 25, 5];
+		return BinaryHeapUtils.buildHeap(sampleData, type);
+	}, []);
 
-    const generateSampleHeap = useCallback((type: HeapType = 'max') => {
-        const sampleData = [50, 30, 70, 20, 10, 60, 90, 15, 25, 5];
-        return BinaryHeapUtils.buildHeap(sampleData, type);
-    }, []);
+	const createHeapFromArray = useCallback((array: number[], type: HeapType) => {
+		return BinaryHeapUtils.buildHeap([...array], type);
+	}, []);
 
-    const createHeapFromArray = useCallback((array: number[], type: HeapType) => {
-        return BinaryHeapUtils.buildHeap([...array], type);
-    }, []);
+	const getInsertAnimationSteps = useCallback(
+		(data: number[], value: number, type: HeapType): HeapifyStep[] => {
+			const simulationData = [...data, value]; // シミュレーション用のコピー
+			const steps: HeapifyStep[] = [];
+			let currentIndex = simulationData.length - 1;
 
-    const getInsertAnimationSteps = useCallback((data: number[], value: number, type: HeapType): HeapifyStep[] => {
-        const newData = [...data, value];
-        const steps: HeapifyStep[] = [];
-        let currentIndex = newData.length - 1;
+			steps.push({
+				type: "highlight",
+				indices: [currentIndex],
+				description: `新しい要素 ${value.toString()} を配列の末尾に追加`,
+			});
 
-        steps.push({
-            type: 'highlight',
-            indices: [currentIndex],
-            description: `新しい要素 ${value} を配列の末尾に追加`
-        });
+			while (currentIndex > 0) {
+				const parentIndex = Math.floor((currentIndex - 1) / 2);
+				const compare =
+					type === "max"
+						? simulationData[currentIndex] > simulationData[parentIndex]
+						: simulationData[currentIndex] < simulationData[parentIndex];
 
-        while (currentIndex > 0) {
-            const parentIndex = Math.floor((currentIndex - 1) / 2);
-            const compare = type === 'max' 
-                ? newData[currentIndex] > newData[parentIndex]
-                : newData[currentIndex] < newData[parentIndex];
+				steps.push({
+					type: "compare",
+					indices: [currentIndex, parentIndex],
+					description: `子 ${simulationData[currentIndex].toString()} と親 ${simulationData[parentIndex].toString()} を比較`,
+				});
 
-            steps.push({
-                type: 'compare',
-                indices: [currentIndex, parentIndex],
-                description: `子 ${newData[currentIndex]} と親 ${newData[parentIndex]} を比較`
-            });
+				if (!compare) {
+					steps.push({
+						type: "highlight",
+						indices: [currentIndex],
+						description: `ヒープ条件を満たしているため、挿入完了`,
+					});
+					break;
+				}
 
-            if (!compare) break;
+				steps.push({
+					type: "swap",
+					indices: [currentIndex, parentIndex],
+					description: `${simulationData[currentIndex].toString()} と ${simulationData[parentIndex].toString()} を交換`,
+				});
 
-            steps.push({
-                type: 'swap',
-                indices: [currentIndex, parentIndex],
-                description: `${newData[currentIndex]} と ${newData[parentIndex]} を交換`
-            });
+				// シミュレーション用データを更新（実際のデータは変更しない）
+				[simulationData[currentIndex], simulationData[parentIndex]] = [
+					simulationData[parentIndex],
+					simulationData[currentIndex],
+				];
+				currentIndex = parentIndex;
+			}
 
-            [newData[currentIndex], newData[parentIndex]] = [newData[parentIndex], newData[currentIndex]];
-            currentIndex = parentIndex;
-        }
+			return steps;
+		},
+		[],
+	);
 
-        return steps;
-    }, []);
+	const getExtractAnimationSteps = useCallback(
+		(data: number[], type: HeapType): HeapifyStep[] => {
+			if (data.length === 0) return [];
 
-    const getExtractAnimationSteps = useCallback((data: number[], type: HeapType): HeapifyStep[] => {
-        if (data.length === 0) return [];
+			const steps: HeapifyStep[] = [];
+			const simulationData = [...data]; // シミュレーション用のコピー
 
-        const steps: HeapifyStep[] = [];
-        const newData = [...data];
+			steps.push({
+				type: "highlight",
+				indices: [0],
+				description: `ルート要素 ${simulationData[0].toString()} を削除`,
+			});
 
-        steps.push({
-            type: 'highlight',
-            indices: [0],
-            description: `ルート要素 ${newData[0]} を削除`
-        });
+			if (simulationData.length === 1) return steps;
 
-        if (newData.length === 1) return steps;
+			// Move last element to root
+			const lastElement = simulationData[simulationData.length - 1];
+			steps.push({
+				type: "swap",
+				indices: [0, simulationData.length - 1],
+				description: `最後の要素 ${lastElement.toString()} をルートに移動`,
+			});
 
-        // Move last element to root
-        steps.push({
-            type: 'swap',
-            indices: [0, newData.length - 1],
-            description: `最後の要素 ${newData[newData.length - 1]} をルートに移動`
-        });
+			// シミュレーション用データを更新
+			[simulationData[0], simulationData[simulationData.length - 1]] = [
+				simulationData[simulationData.length - 1],
+				simulationData[0],
+			];
+			simulationData.pop();
 
-        [newData[0], newData[newData.length - 1]] = [newData[newData.length - 1], newData[0]];
-        newData.pop();
+			// Heapify down from root
+			const heapifySteps = getHeapifyDownSteps(
+				simulationData,
+				0,
+				simulationData.length,
+				type,
+			);
+			steps.push(...heapifySteps);
 
-        // Heapify down
-        let currentIndex = 0;
-        while (true) {
-            const leftChild = 2 * currentIndex + 1;
-            const rightChild = 2 * currentIndex + 2;
-            let targetIndex = currentIndex;
+			return steps;
+		},
+		[],
+	);
 
-            if (leftChild < newData.length) {
-                steps.push({
-                    type: 'compare',
-                    indices: [currentIndex, leftChild],
-                    description: `親 ${newData[currentIndex]} と左の子 ${newData[leftChild]} を比較`
-                });
+	const getBuildHeapAnimationSteps = useCallback(
+		(data: number[], type: HeapType): HeapifyStep[] => {
+			const steps: HeapifyStep[] = [];
+			const newData = [...data];
+			const n = newData.length;
 
-                const compareLeft = type === 'max' 
-                    ? newData[leftChild] > newData[targetIndex]
-                    : newData[leftChild] < newData[targetIndex];
-                    
-                if (compareLeft) targetIndex = leftChild;
-            }
+			if (n <= 1) return steps;
 
-            if (rightChild < newData.length) {
-                steps.push({
-                    type: 'compare',
-                    indices: [currentIndex, rightChild],
-                    description: `親 ${newData[currentIndex]} と右の子 ${newData[rightChild]} を比較`
-                });
+			steps.push({
+				type: "highlight",
+				indices: Array.from({ length: n }, (_, i) => i),
+				description: `配列からヒープを構築開始（${n.toString()}個の要素）`,
+			});
 
-                const compareRight = type === 'max' 
-                    ? newData[rightChild] > newData[targetIndex]
-                    : newData[rightChild] < newData[targetIndex];
-                    
-                if (compareRight) targetIndex = rightChild;
-            }
+			// Start from the last parent node and go up
+			for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+				steps.push({
+					type: "highlight",
+					indices: [i],
+					description: `ノード ${i.toString()} (値: ${newData[i].toString()}) から heapify 開始`,
+				});
 
-            if (targetIndex === currentIndex) break;
+				// Single heapify-down pass for node i
+				const heapifySteps = getHeapifyDownSteps(newData, i, n, type);
+				steps.push(...heapifySteps);
+			}
 
-            steps.push({
-                type: 'swap',
-                indices: [currentIndex, targetIndex],
-                description: `${newData[currentIndex]} と ${newData[targetIndex]} を交換`
-            });
+			return steps;
+		},
+		[],
+	);
 
-            [newData[currentIndex], newData[targetIndex]] = [newData[targetIndex], newData[currentIndex]];
-            currentIndex = targetIndex;
-        }
+	// Helper function for heapify-down animation steps
+	const getHeapifyDownSteps = (
+		data: number[],
+		startIndex: number,
+		heapSize: number,
+		type: HeapType,
+	): HeapifyStep[] => {
+		const steps: HeapifyStep[] = [];
+		const simulationData = [...data]; // シミュレーション用のコピー
+		let currentIndex = startIndex;
 
-        return steps;
-    }, []);
+		while (true) {
+			const leftChild = 2 * currentIndex + 1;
+			const rightChild = 2 * currentIndex + 2;
+			let targetIndex = currentIndex;
 
-    const getBuildHeapAnimationSteps = useCallback((data: number[], type: HeapType): HeapifyStep[] => {
-        const steps: HeapifyStep[] = [];
-        const newData = [...data];
-        const n = newData.length;
+			// Find the target node (parent or one of children)
 
-        steps.push({
-            type: 'highlight',
-            indices: Array.from({ length: n }, (_, i) => i),
-            description: '配列からヒープを構築開始'
-        });
+			// Check left child
+			if (leftChild < heapSize) {
+				const compareLeft =
+					type === "max"
+						? simulationData[leftChild] > simulationData[targetIndex]
+						: simulationData[leftChild] < simulationData[targetIndex];
 
-        // Start from the last parent node and go up
-        for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
-            let currentIndex = i;
+				if (compareLeft) {
+					targetIndex = leftChild;
+				}
+			}
 
-            while (true) {
-                const leftChild = 2 * currentIndex + 1;
-                const rightChild = 2 * currentIndex + 2;
-                let targetIndex = currentIndex;
+			// Check right child
+			if (rightChild < heapSize) {
+				const compareRight =
+					type === "max"
+						? simulationData[rightChild] > simulationData[targetIndex]
+						: simulationData[rightChild] < simulationData[targetIndex];
 
-                if (leftChild < n) {
-                    steps.push({
-                        type: 'compare',
-                        indices: [currentIndex, leftChild],
-                        description: `ノード ${newData[currentIndex]} と左の子 ${newData[leftChild]} を比較`
-                    });
+				if (compareRight) {
+					targetIndex = rightChild;
+				}
+			}
 
-                    const compareLeft = type === 'max' 
-                        ? newData[leftChild] > newData[targetIndex]
-                        : newData[leftChild] < newData[targetIndex];
-                        
-                    if (compareLeft) targetIndex = leftChild;
-                }
+			// Add comparison step if we have children to compare
+			if (leftChild < heapSize || rightChild < heapSize) {
+				const comparisonIndices = [currentIndex];
+				if (leftChild < heapSize) comparisonIndices.push(leftChild);
+				if (rightChild < heapSize) comparisonIndices.push(rightChild);
 
-                if (rightChild < n) {
-                    steps.push({
-                        type: 'compare',
-                        indices: [currentIndex, rightChild],
-                        description: `ノード ${newData[currentIndex]} と右の子 ${newData[rightChild]} を比較`
-                    });
+				steps.push({
+					type: "compare",
+					indices: comparisonIndices,
+					description: `ノード ${currentIndex.toString()}(値: ${simulationData[currentIndex].toString()}) と子ノードを比較`,
+				});
+			}
 
-                    const compareRight = type === 'max' 
-                        ? newData[rightChild] > newData[targetIndex]
-                        : newData[rightChild] < newData[targetIndex];
-                        
-                    if (compareRight) targetIndex = rightChild;
-                }
+			// If no swap needed, break
+			if (targetIndex === currentIndex) {
+				steps.push({
+					type: "highlight",
+					indices: [currentIndex],
+					description: `ノード ${currentIndex.toString()} はヒープ条件を満たしています`,
+				});
+				break;
+			}
 
-                if (targetIndex === currentIndex) break;
+			// Perform swap
+			steps.push({
+				type: "swap",
+				indices: [currentIndex, targetIndex],
+				description: `${simulationData[currentIndex].toString()} と ${simulationData[targetIndex].toString()} を交換`,
+			});
 
-                steps.push({
-                    type: 'swap',
-                    indices: [currentIndex, targetIndex],
-                    description: `${newData[currentIndex]} と ${newData[targetIndex]} を交換してヒープ性質を維持`
-                });
+			// シミュレーション用データを更新（実際のデータは変更しない）
+			[simulationData[currentIndex], simulationData[targetIndex]] = [
+				simulationData[targetIndex],
+				simulationData[currentIndex],
+			];
+			currentIndex = targetIndex;
+		}
 
-                [newData[currentIndex], newData[targetIndex]] = [newData[targetIndex], newData[currentIndex]];
-                currentIndex = targetIndex;
-            }
-        }
+		return steps;
+	};
 
-        return steps;
-    }, []);
-
-    return {
-        insertElement,
-        extractRoot,
-        buildHeap,
-        validateHeap,
-        generateRandomData,
-        heapifyUp,
-        heapifyDown,
-        shuffleArray,
-        generateSampleHeap,
-        createHeapFromArray,
-        getInsertAnimationSteps,
-        getExtractAnimationSteps,
-        getBuildHeapAnimationSteps
-    };
+	return {
+		insertElement,
+		extractRoot,
+		buildHeap,
+		validateHeap,
+		generateRandomData,
+		heapifyUp,
+		heapifyDown,
+		shuffleArray,
+		generateSampleHeap,
+		createHeapFromArray,
+		getInsertAnimationSteps,
+		getExtractAnimationSteps,
+		getBuildHeapAnimationSteps,
+	};
 }

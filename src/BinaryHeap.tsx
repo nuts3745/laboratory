@@ -1,295 +1,341 @@
-import { useCallback, useMemo } from 'react';
-import './BinaryHeap.css';
-import type { HeapType } from './types/heap.js';
-import { useHeapState } from './hooks/useHeapState.js';
-import { useHeapOperations } from './hooks/useHeapOperations.js';
-import { useAdvancedAnimation } from './hooks/useAdvancedAnimation.js';
-import { HeapVisualizer } from './components/heap/HeapVisualizer.js';
-import { ArrayDisplay } from './components/heap/ArrayDisplay.js';
-import { HeapControls } from './components/heap/HeapControls.js';
-import { InfoPanel } from './components/heap/InfoPanel.js';
-import { ToastContainer } from './components/ui/ToastContainer.js';
+import { useCallback, useState } from "react";
+import "./BinaryHeap.css";
+import { ArrayDisplay } from "./components/heap/ArrayDisplay.js";
+import { HeapControls } from "./components/heap/HeapControls.js";
+import { HeapVisualizer } from "./components/heap/HeapVisualizer.js";
+import { InfoPanel } from "./components/heap/InfoPanel.js";
+import { Footer } from "./components/ui/Footer.js";
+import { ToastContainer } from "./components/ui/ToastContainer.js";
+import { useHeapLogic } from "./hooks/useHeapLogic.js";
+import { useSimpleAnimation } from "./hooks/useSimpleAnimation.js";
+import type { HeapType } from "./types/heap.js";
+import type { ToastMessage } from "./types/heap.js";
 
 /**
- * Main Binary Heap Visualizer Component
- * 疎結合・高凝集を実現するメインコンポーネント
- * useEffectを使わずに純粋な関数とステート管理で実装
+ * バイナリヒープ可視化ツール
+ * シンプルで信頼性の高いアニメーションシステム
  */
-export const BinaryHeap: React.FC<{ isClicked: boolean, setIsClicked: (arg0: boolean) => void }> = (props): React.ReactElement => {
-    const { heapState, toasts, actions } = useHeapState('max');
-    const heapOperations = useHeapOperations();
-    const animation = useAdvancedAnimation();
+export const BinaryHeap: React.FC<{
+	isClicked: boolean;
+	setIsClicked: (arg0: boolean) => void;
+}> = (props): React.ReactElement => {
+	// 基本状態
+	const [heapData, setHeapData] = useState<number[]>([]);
+	const [heapType, setHeapType] = useState<HeapType>("max");
+	const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-    // Animation utility without useEffect
-    const executeAnimation = useCallback((animationSteps: Array<() => void>) => {
-        if (heapState.isAnimating) return;
+	// カスタムフック
+	const { animationState, startAnimation, stopAnimation, isAnimating } =
+		useSimpleAnimation();
+	const {
+		generateInsertSteps,
+		generateExtractSteps,
+		generateBuildHeapSteps,
+		generateLevelOrderSteps,
+	} = useHeapLogic();
 
-        actions.setAnimatingState(true);
+	// トースト管理
+	const addToast = useCallback(
+		(message: string, type: ToastMessage["type"] = "info") => {
+			const id = `toast-${Date.now().toString()}-${Math.random().toString()}`;
+			const newToast: ToastMessage = {
+				id,
+				message,
+				type,
+				duration: 3000,
+				persistent: false,
+			};
 
-        const executeNextStep = (index: number) => {
-            if (index >= animationSteps.length) {
-                actions.setAnimatingState(false);
-                actions.clearHighlights();
-                return;
-            }
+			setToasts((prev) => [...prev, newToast]);
 
-            animationSteps[index]();
-            setTimeout(() => executeNextStep(index + 1), 800);
-        };
+			setTimeout(() => {
+				setToasts((prev) => prev.filter((toast) => toast.id !== id));
+			}, 3000);
+		},
+		[],
+	);
 
-        executeNextStep(0);
-    }, [heapState.isAnimating, actions]);
+	const removeToast = useCallback((id: string) => {
+		setToasts((prev) => prev.filter((toast) => toast.id !== id));
+	}, []);
 
-    // Advanced animation callbacks with stable references
-    const animationCallbacks = useMemo(() => ({
-        onCompare: (indices: number[], isComparing: boolean) => {
-            if (isComparing) {
-                actions.setComparingNodes(indices);
-            } else {
-                actions.clearHighlights();
-            }
-        },
+	// スワップ処理（アニメーション中に呼ばれる）
+	const handleSwap = useCallback((i1: number, i2: number) => {
+		setHeapData((prev) => {
+			const newData = [...prev];
+			if (i1 < newData.length && i2 < newData.length) {
+				[newData[i1], newData[i2]] = [newData[i2], newData[i1]];
+			}
+			return newData;
+		});
+	}, []);
 
-        onSwap: (i1: number, i2: number) => {
-            actions.setSwappingNodes([i1, i2]);
-            // Perform the actual swap in state
-            const newData = [...heapState.data];
-            [newData[i1], newData[i2]] = [newData[i2], newData[i1]];
-            actions.updateHeapData(newData);
-        },
+	// ヒープ操作ハンドラー
+	const handleAddElement = useCallback(
+		(value: number) => {
+			if (isAnimating) return;
 
-        onHighlight: (index: number, isActive: boolean) => {
-            if (isActive) {
-                actions.setActiveNode(index);
-            } else {
-                actions.clearHighlights();
-            }
-        },
+			// 1. まず要素を追加（視覚的に表示）
+			const newData = [...heapData, value];
+			setHeapData(newData);
 
-        onStep: (description: string) => {
-            actions.addToast(description, 'info');
-        }
-    }), [actions, heapState.data]);
+			// 2. アニメーションステップを生成
+			const steps = generateInsertSteps(heapData, value, heapType);
 
-    // Handler functions
-    const handleNodeClick = useCallback((index: number) => {
-        if (heapState.isAnimating) return;
+			// 3. アニメーション実行
+			addToast(`要素 ${value.toString()} を追加中...`, "info");
+			startAnimation(steps, handleSwap);
+		},
+		[
+			heapData,
+			heapType,
+			isAnimating,
+			generateInsertSteps,
+			startAnimation,
+			handleSwap,
+			addToast,
+		],
+	);
 
-        if (heapState.activeIndex === index) {
-            actions.clearHighlights();
-        } else {
-            actions.setActiveNode(index);
-        }
-    }, [heapState.activeIndex, heapState.isAnimating, actions]);
+	const handleAddRandom = useCallback(() => {
+		const randomValue = Math.floor(Math.random() * 100) + 1;
+		handleAddElement(randomValue);
+	}, [handleAddElement]);
 
-    const handleTypeChange = useCallback((type: HeapType) => {
-        if (heapState.isAnimating) return;
+	const handleExtractRoot = useCallback(() => {
+		if (isAnimating || heapData.length === 0) {
+			if (heapData.length === 0) {
+				addToast("ヒープが空です", "error");
+			}
+			return;
+		}
 
-        actions.updateHeapType(type);
-        actions.clearHighlights();
+		const rootValue = heapData[0];
 
-        if (heapState.data.length > 0) {
-            const { newData } = heapOperations.buildHeap(heapState.data, type);
-            actions.updateHeapData(newData);
-            actions.addToast(`${type === 'max' ? '最大' : '最小'}ヒープに変換しました`, 'success');
-        }
-    }, [heapState.data, heapState.isAnimating, actions, heapOperations]);
+		// アニメーションステップを生成
+		const steps = generateExtractSteps(heapData, heapType);
 
-    const handleAddElement = useCallback((value: number) => {
-        if (heapState.isAnimating) return;
+		// アニメーション実行
+		addToast(`要素 ${rootValue.toString()} を削除中...`, "info");
+		startAnimation(steps, handleSwap);
+	}, [
+		heapData,
+		heapType,
+		isAnimating,
+		generateExtractSteps,
+		startAnimation,
+		handleSwap,
+		addToast,
+	]);
 
-        const result = heapOperations.insertElement(heapState.data, value, heapState.type);
+	const handleTypeChange = useCallback(
+		async (type: HeapType) => {
+			if (isAnimating) return;
 
-        if (result.success) {
-            // Animation steps for insertion
-            const oldLength = heapState.data.length;
-            const animationSteps = [
-                () => {
-                    actions.updateHeapData(result.newHeap);
-                    actions.setActiveNode(oldLength); // Highlight newly added element
-                },
-                () => {
-                    // Show heapify up animation would go here
-                    actions.clearHighlights();
-                }
-            ];
+			setHeapType(type);
 
-            executeAnimation(animationSteps);
-            actions.addToast(result.message, 'success');
-        } else {
-            actions.addToast(result.message, 'error');
-        }
-    }, [heapState.data, heapState.type, heapState.isAnimating, actions, heapOperations, executeAnimation]);
+			// データがある場合は自動的にヒープ化を実行
+			if (heapData.length > 1) {
+				addToast(
+					`${type === "max" ? "最大" : "最小"}ヒープに変更してヒープ化中...`,
+					"info",
+				);
 
-    const handleAddRandom = useCallback(() => {
-        const randomValue = Math.floor(Math.random() * 100) + 1;
-        handleAddElement(randomValue);
-    }, [handleAddElement]);
+				// 少し待ってからヒープ化アニメーション
+				await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const handleExtractRoot = useCallback(() => {
-        if (heapState.isAnimating) return;
+				const steps = generateBuildHeapSteps(heapData, type);
+				startAnimation(steps, handleSwap);
+			} else {
+				addToast(`${type === "max" ? "最大" : "最小"}ヒープに変更`, "success");
+			}
+		},
+		[
+			heapData,
+			isAnimating,
+			generateBuildHeapSteps,
+			startAnimation,
+			handleSwap,
+			addToast,
+		],
+	);
 
-        const result = heapOperations.extractRoot(heapState.data, heapState.type);
+	const handleClear = useCallback(() => {
+		if (isAnimating) return;
+		setHeapData([]);
+		addToast("ヒープをクリア", "info");
+	}, [isAnimating, addToast]);
 
-        if (result.success) {
-            const animationSteps = [
-                () => {
-                    actions.setActiveNode(0); // Highlight root
-                },
-                () => {
-                    actions.updateHeapData(result.newHeap);
-                    actions.clearHighlights();
-                }
-            ];
+	const handleBuildHeap = useCallback(
+		async (values: number[]) => {
+			if (isAnimating) return;
 
-            executeAnimation(animationSteps);
-            actions.addToast(result.message, 'success');
-        } else {
-            actions.addToast(result.message, 'error');
-        }
-    }, [heapState.data, heapState.type, heapState.isAnimating, actions, heapOperations, executeAnimation]);
+			// 1. 生データを表示
+			setHeapData(values);
+			addToast(
+				`${values.length.toString()}個の要素からヒープを構築中...`,
+				"info",
+			);
 
-    const handleBuildHeap = useCallback((values: number[]) => {
-        if (heapState.isAnimating) return;
+			// 2. 少し待ってからアニメーション開始
+			await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const { newData, operations } = heapOperations.buildHeap(values, heapState.type);
+			// 3. ヒープ化アニメーションステップを生成
+			const steps = generateBuildHeapSteps(values, heapType);
 
-        // First set the raw data
-        actions.updateHeapData(values);
+			// 4. アニメーション実行
+			startAnimation(steps, handleSwap);
+		},
+		[
+			heapType,
+			isAnimating,
+			generateBuildHeapSteps,
+			startAnimation,
+			handleSwap,
+			addToast,
+		],
+	);
 
-        // Then animate the build process
-        const animationSteps = operations.flatMap(operation => [
-            () => actions.setActiveNode(operation.index),
-            () => {
-                if (operation.swaps.length > 0) {
-                    actions.setSwappingNodes(operation.swaps.flatMap(swap => [swap.from, swap.to]));
-                }
-            },
-            () => actions.clearHighlights()
-        ]);
+	const handleCreateSample = useCallback(async () => {
+		if (isAnimating) return;
+		const sampleData = [50, 30, 70, 20, 10, 60, 90, 15, 25, 5];
+		setHeapData(sampleData);
+		addToast("サンプルデータを作成してヒープ化を開始...", "success");
 
-        // Final step: set the completed heap
-        animationSteps.push(() => actions.updateHeapData(newData));
+		// 少し待ってからヒープ化を実行
+		await new Promise((resolve) => setTimeout(resolve, 500));
+		await handleBuildHeap(sampleData);
+	}, [isAnimating, addToast, handleBuildHeap]);
 
-        executeAnimation(animationSteps);
-        actions.addToast(`${values.length}個の要素からヒープを構築しました`, 'success');
-    }, [heapState.type, heapState.isAnimating, actions, heapOperations, executeAnimation]);
+	const handleShuffle = useCallback(() => {
+		if (isAnimating || heapData.length === 0) return;
+		const shuffled = [...heapData].sort(() => Math.random() - 0.5);
+		setHeapData(shuffled);
+		addToast("配列をシャッフルしました", "info");
+	}, [heapData, isAnimating, addToast]);
 
-    const handleShuffle = useCallback(() => {
-        if (heapState.isAnimating || heapState.data.length === 0) return;
+	// シャッフル後にヒープ化を実行
+	const handleShuffleAndHeapify = useCallback(async () => {
+		if (isAnimating || heapData.length === 0) {
+			if (heapData.length === 0) {
+				addToast("ヒープが空です", "error");
+			}
+			return;
+		}
 
-        const shuffled = [...heapState.data].sort(() => Math.random() - 0.5);
-        handleBuildHeap(shuffled);
-    }, [heapState.data, heapState.isAnimating, handleBuildHeap]);
+		// 1. まずシャッフル
+		const shuffled = [...heapData].sort(() => Math.random() - 0.5);
+		setHeapData(shuffled);
+		addToast("配列をシャッフルしてヒープ化を開始...", "info");
 
-    const handleClear = useCallback(() => {
-        if (heapState.isAnimating) return;
+		// 2. 少し待ってからヒープ化
+		await new Promise((resolve) => setTimeout(resolve, 800));
+		await handleBuildHeap(shuffled);
+	}, [heapData, isAnimating, handleBuildHeap, addToast]);
 
-        actions.updateHeapData([]);
-        actions.clearHighlights();
-        actions.addToast('ヒープをクリアしました', 'info');
-    }, [heapState.isAnimating, actions]);
+	const handleNodeClick = useCallback(
+		(index: number) => {
+			// シンプルなクリック処理（必要に応じて拡張）
+			addToast(
+				`ノード ${index.toString()} (値: ${heapData[index].toString()}) をクリック`,
+				"info",
+			);
+		},
+		[heapData, addToast],
+	);
 
-    const handleCreateSample = useCallback(() => {
-        if (heapState.isAnimating) return;
+	// レベル順走査
+	const handleLevelOrderTraversal = useCallback(() => {
+		if (isAnimating || heapData.length === 0) {
+			if (heapData.length === 0) {
+				addToast("ヒープが空です", "error");
+			}
+			return;
+		}
 
-        const sampleData = heapOperations.generateRandomData(10);
-        handleBuildHeap(sampleData);
-    }, [heapState.isAnimating, heapOperations, handleBuildHeap]);
+		addToast("レベル順走査を開始...", "info");
 
-    // Advanced animation handlers
-    const handleLevelOrderTraversal = useCallback(() => {
-        if (heapState.isAnimating || heapState.data.length === 0) return;
+		const steps = generateLevelOrderSteps(heapData);
+		startAnimation(steps, handleSwap);
+	}, [
+		heapData,
+		isAnimating,
+		generateLevelOrderSteps,
+		startAnimation,
+		handleSwap,
+		addToast,
+	]);
 
-        actions.addToast('レベル順走査を開始します', 'info');
-        
-        animation.executeLevelOrderTraversal(heapState.data, animationCallbacks.onHighlight)
-            .then(() => {
-                actions.addToast('レベル順走査が完了しました', 'success');
-            })
-            .catch(() => {
-                actions.addToast('走査が中断されました', 'warning');
-            });
-    }, [heapState.data, heapState.isAnimating, animation, animationCallbacks.onHighlight, actions]);
+	// アニメーション停止
+	const handleStopAnimation = useCallback(() => {
+		stopAnimation();
+		addToast("アニメーションを停止", "warning");
+	}, [stopAnimation, addToast]);
 
-    const handleShuffleAndHeapify = useCallback(() => {
-        if (heapState.isAnimating || heapState.data.length === 0) return;
+	// 現在のヒープ状態を作成（既存コンポーネントとの互換性のため）
+	const heapState = {
+		data: heapData,
+		type: heapType,
+		activeIndex: null,
+		parentIndex: null,
+		childIndices: [],
+		comparingIndices: animationState.comparingNodes,
+		swappingIndices: animationState.swappingNodes,
+		isAnimating: isAnimating,
+	};
 
-        const shuffledData = heapOperations.shuffleArray(heapState.data);
-        actions.updateHeapData(shuffledData);
-        actions.addToast('配列をシャッフルしました', 'info');
+	return (
+		<div className="binary-heap-container">
+			<div className="heap-wrapper">
+				<div
+					className="neumorphic-back-link"
+					onClick={() => {
+						props.setIsClicked(false);
+					}}
+					onKeyDown={(e) => {
+						if (e.key === "Enter") props.setIsClicked(false);
+					}}
+				>
+					←
+				</div>
+				<h1 className="heap-title">🌳 バイナリヒープ可視化ツール</h1>
 
-        setTimeout(() => {
-            const steps = heapOperations.getBuildHeapAnimationSteps(shuffledData, heapState.type);
-            
-            animation.executeHeapifyAnimation(steps, animationCallbacks)
-                .then(() => {
-                    const heapifiedData = heapOperations.buildHeap(shuffledData, heapState.type);
-                    actions.updateHeapData(heapifiedData.newData);
-                    actions.addToast('ヒープ化が完了しました', 'success');
-                })
-                .catch(() => {
-                    actions.addToast('ヒープ化が中断されました', 'warning');
-                });
-        }, 500);
-    }, [heapState.data, heapState.type, heapState.isAnimating, heapOperations, animation, animationCallbacks, actions]);
+				<div className="heap-main-content">
+					<HeapVisualizer heapState={heapState} onNodeClick={handleNodeClick} />
 
-    const handleResetAnimation = useCallback(() => {
-        animation.stopAnimation();
-        actions.setAnimatingState(false);
-        actions.clearHighlights();
-        actions.addToast('アニメーションをリセットしました', 'info');
-    }, [animation, actions]);
+					<ArrayDisplay heapState={heapState} onCellClick={handleNodeClick} />
 
-    return (
-        <div className="binary-heap-container">
-            <div className="heap-wrapper">
-                {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-                <div
-                    className="back-link"
-                    onClick={() => props.setIsClicked(false)}
-                >←</div>
-                <h1 className="heap-title">🌳 バイナリヒープ可視化ツール</h1>
+					<HeapControls
+						heapType={heapType}
+						isAnimating={isAnimating}
+						onTypeChange={(type) => {
+							void handleTypeChange(type);
+						}}
+						onAddElement={handleAddElement}
+						onAddRandom={handleAddRandom}
+						onExtractRoot={handleExtractRoot}
+						onBuildHeap={(values) => {
+							void handleBuildHeap(values);
+						}}
+						onShuffle={handleShuffle}
+						onClear={handleClear}
+						onCreateSample={() => {
+							void handleCreateSample();
+						}}
+						onLevelOrderTraversal={handleLevelOrderTraversal}
+						onShuffleAndHeapify={() => {
+							void handleShuffleAndHeapify();
+						}}
+						onResetAnimation={handleStopAnimation}
+					/>
 
-                <div className="heap-main-content">
-                    <HeapVisualizer
-                        heapState={heapState}
-                        onNodeClick={handleNodeClick}
-                    />
+					<InfoPanel heapState={heapState} />
+				</div>
+			</div>
 
-                    <ArrayDisplay
-                        heapState={heapState}
-                        onCellClick={handleNodeClick}
-                    />
+			<ToastContainer toasts={toasts} onToastClose={removeToast} />
 
-                    <HeapControls
-                        heapType={heapState.type}
-                        isAnimating={heapState.isAnimating}
-                        onTypeChange={handleTypeChange}
-                        onAddElement={handleAddElement}
-                        onAddRandom={handleAddRandom}
-                        onExtractRoot={handleExtractRoot}
-                        onBuildHeap={handleBuildHeap}
-                        onShuffle={handleShuffle}
-                        onClear={handleClear}
-                        onCreateSample={handleCreateSample}
-                        onLevelOrderTraversal={handleLevelOrderTraversal}
-                        onShuffleAndHeapify={handleShuffleAndHeapify}
-                        onResetAnimation={handleResetAnimation}
-                    />
-
-                    <InfoPanel heapState={heapState} />
-                </div>
-
-                <footer style={{ textAlign: 'center', marginTop: '40px', color: '#718096', fontSize: '14px' }}>
-                    <p>バイナリヒープの構造と操作を視覚的に学習できるツールです</p>
-                </footer>
-            </div>
-
-            <ToastContainer
-                toasts={toasts}
-                onToastClose={actions.removeToast}
-            />
-        </div>
-    );
-}
+			<Footer />
+		</div>
+	);
+};
