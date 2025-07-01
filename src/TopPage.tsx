@@ -20,7 +20,7 @@ export const TopPage: React.FC<{
 					←
 				</a>
 				<div className="logo">
-					<div className="logo-text">labs.nuts3745.workers.dev</div>
+					<div className="logo-text">labs.nuts3745.dev</div>
 				</div>
 			</header>
 
