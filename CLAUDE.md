@@ -22,6 +22,13 @@ npx biome check .
 npx biome check --write .  # 自動修正
 ```
 
+### バージョン管理 (jj)
+```bash
+# mainブランチを現在のコミットに移動してプッシュ
+jj bookmark set main -r @-
+jj git push
+```
+
 ## 技術スタック
 
 - **フロントエンド**: React 19 + TypeScript + Vite
