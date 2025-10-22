@@ -35,11 +35,11 @@ export function InfoPanel({ heapState }: InfoPanelProps) {
 		const leftChild = BinaryHeapUtils.getLeftChildIndex(index);
 		const rightChild = BinaryHeapUtils.getRightChildIndex(index);
 
-		let content = `📍 インデックス: ${index}\n🔢 値: ${value}\n\n`;
+		let content = `📍 インデックス: ${index.toString()}\n🔢 値: ${value.toString()}\n\n`;
 
 		// Parent information
 		if (parentIndex !== null) {
-			content += `👆 親ノード: インデックス ${parentIndex}, 値 ${heapState.data[parentIndex]}\n`;
+			content += `👆 親ノード: インデックス ${parentIndex.toString()}, 値 ${heapState.data[parentIndex].toString()}\n`;
 		} else {
 			content += "👆 親ノード: なし（ルートノード）\n";
 		}
@@ -48,12 +48,12 @@ export function InfoPanel({ heapState }: InfoPanelProps) {
 		const children = [];
 		if (leftChild < heapState.data.length) {
 			children.push(
-				`左の子: インデックス ${leftChild}, 値 ${heapState.data[leftChild]}`,
+				`左の子: インデックス ${leftChild.toString()}, 値 ${heapState.data[leftChild].toString()}`,
 			);
 		}
 		if (rightChild < heapState.data.length) {
 			children.push(
-				`右の子: インデックス ${rightChild}, 値 ${heapState.data[rightChild]}`,
+				`右の子: インデックス ${rightChild.toString()}, 値 ${heapState.data[rightChild].toString()}`,
 			);
 		}
 

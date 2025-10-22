@@ -44,7 +44,7 @@ export function Toast({ toast, onClose }: ToastProps) {
 				<div
 					className="toast-progress"
 					style={{
-						animationDuration: `${toast.duration}ms`,
+						animationDuration: `${toast.duration.toString()}ms`,
 						animationName: "progressBar",
 					}}
 				/>

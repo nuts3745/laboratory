@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { HeapType } from "../types/heap.js";
 import { BinaryHeapUtils } from "../utils/heapUtils.js";
 import type { HeapifyStep } from "./useAdvancedAnimation.js";
@@ -8,6 +8,15 @@ import type { HeapifyStep } from "./useAdvancedAnimation.js";
  * 高度なビジネスロジックとアニメーション対応の操作を提供
  */
 export function useHeapOperations() {
+	const getHeapifyDownStepsRef = useRef<
+		((
+			data: number[],
+			index: number,
+			size: number,
+			type: HeapType,
+		) => HeapifyStep[]) | null
+	>(null);
+
 	const insertElement = useCallback(
 		(data: number[], value: number, type: HeapType) => {
 			return BinaryHeapUtils.insert(data, value, type);
@@ -147,12 +156,12 @@ export function useHeapOperations() {
 			simulationData.pop();
 
 			// Heapify down from root
-			const heapifySteps = getHeapifyDownSteps(
+			const heapifySteps = getHeapifyDownStepsRef.current?.(
 				simulationData,
 				0,
 				simulationData.length,
 				type,
-			);
+			) ?? [];
 			steps.push(...heapifySteps);
 
 			return steps;
@@ -183,7 +192,7 @@ export function useHeapOperations() {
 				});
 
 				// Single heapify-down pass for node i
-				const heapifySteps = getHeapifyDownSteps(newData, i, n, type);
+				const heapifySteps = getHeapifyDownStepsRef.current?.(newData, i, n, type) ?? [];
 				steps.push(...heapifySteps);
 			}
 
@@ -203,6 +212,7 @@ export function useHeapOperations() {
 		const simulationData = [...data]; // シミュレーション用のコピー
 		let currentIndex = startIndex;
 
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		while (true) {
 			const leftChild = 2 * currentIndex + 1;
 			const rightChild = 2 * currentIndex + 2;
@@ -274,6 +284,11 @@ export function useHeapOperations() {
 
 		return steps;
 	};
+
+	// Update ref after render
+	useEffect(() => {
+		getHeapifyDownStepsRef.current = getHeapifyDownSteps;
+	}, []);
 
 	return {
 		insertElement,

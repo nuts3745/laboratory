@@ -30,9 +30,11 @@ export const TopPage: React.FC<{
 					onClick={() => {
 						props.setIsClicked(!props.isClicked);
 					}}
-					onKeyDown={(e) =>
-						e.key === "Enter" && props.setIsClicked(!props.isClicked)
-					}
+					onKeyDown={(e) => {
+						if (e.key === "Enter") {
+							props.setIsClicked(!props.isClicked);
+						}
+					}}
 				>
 					<div className="card-icon">
 						<Network />

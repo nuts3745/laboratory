@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { HeapType } from "../types/heap.js";
 import type { AnimationStep } from "./useSimpleAnimation.js";
 
@@ -7,6 +7,23 @@ import type { AnimationStep } from "./useSimpleAnimation.js";
  * アニメーションと実際の操作を分離した設計
  */
 export const useHeapLogic = () => {
+	const generateHeapifyDownStepsRef = useRef<
+		((
+			simData: number[],
+			startIndex: number,
+			heapSize: number,
+			type: HeapType,
+		) => AnimationStep[]) | null
+	>(null);
+	const heapifyDownRef = useRef<
+		((
+			data: number[],
+			startIndex: number,
+			heapSize: number,
+			type: HeapType,
+		) => void) | null
+	>(null);
+
 	// ヒープ条件をチェック
 	const shouldSwap = useCallback(
 		(parent: number, child: number, type: HeapType): boolean => {
@@ -26,7 +43,7 @@ export const useHeapLogic = () => {
 			steps.push({
 				type: "highlight",
 				indices: [currentIndex],
-				description: `新しい要素 ${value} を配列の末尾に追加`,
+				description: `新しい要素 ${value.toString()} を配列の末尾に追加`,
 				duration: 600,
 			});
 
@@ -38,7 +55,7 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "compare",
 					indices: [currentIndex, parentIndex],
-					description: `子 ${simData[currentIndex]} と親 ${simData[parentIndex]} を比較`,
+					description: `子 ${simData[currentIndex].toString()} と親 ${simData[parentIndex].toString()} を比較`,
 					duration: 600,
 				});
 
@@ -50,7 +67,7 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "swap",
 					indices: [currentIndex, parentIndex],
-					description: `${simData[currentIndex]} と ${simData[parentIndex]} をスワップ`,
+					description: `${simData[currentIndex].toString()} と ${simData[parentIndex].toString()} をスワップ`,
 					duration: 800,
 				});
 
@@ -66,7 +83,7 @@ export const useHeapLogic = () => {
 			steps.push({
 				type: "complete",
 				indices: [],
-				description: `要素 ${value} の挿入完了`,
+				description: `要素 ${value.toString()} の挿入完了`,
 				duration: 400,
 			});
 
@@ -88,7 +105,7 @@ export const useHeapLogic = () => {
 			steps.push({
 				type: "highlight",
 				indices: [0],
-				description: `ルート要素 ${rootValue} を削除`,
+				description: `ルート要素 ${rootValue.toString()} を削除`,
 				duration: 600,
 			});
 
@@ -96,7 +113,7 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "complete",
 					indices: [],
-					description: `要素 ${rootValue} の削除完了`,
+					description: `要素 ${rootValue.toString()} の削除完了`,
 					duration: 400,
 				});
 				return steps;
@@ -107,7 +124,7 @@ export const useHeapLogic = () => {
 			steps.push({
 				type: "swap",
 				indices: [0, lastIndex],
-				description: `最後の要素 ${simData[lastIndex]} をルートに移動`,
+				description: `最後の要素 ${simData[lastIndex].toString()} をルートに移動`,
 				duration: 800,
 			});
 
@@ -117,7 +134,9 @@ export const useHeapLogic = () => {
 
 			// 3. Heapify Down
 			let currentIndex = 0;
-			while (true) {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		while (true) {
 				const leftChild = 2 * currentIndex + 1;
 				const rightChild = 2 * currentIndex + 2;
 				let targetIndex = currentIndex;
@@ -127,7 +146,7 @@ export const useHeapLogic = () => {
 					steps.push({
 						type: "compare",
 						indices: [currentIndex, leftChild],
-						description: `親 ${simData[currentIndex]} と左の子 ${simData[leftChild]} を比較`,
+						description: `親 ${simData[currentIndex].toString()} と左の子 ${simData[leftChild].toString()} を比較`,
 						duration: 600,
 					});
 
@@ -141,7 +160,7 @@ export const useHeapLogic = () => {
 					steps.push({
 						type: "compare",
 						indices: [currentIndex, rightChild],
-						description: `親 ${simData[currentIndex]} と右の子 ${simData[rightChild]} を比較`,
+						description: `親 ${simData[currentIndex].toString()} と右の子 ${simData[rightChild].toString()} を比較`,
 						duration: 600,
 					});
 
@@ -158,7 +177,7 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "swap",
 					indices: [currentIndex, targetIndex],
-					description: `${simData[currentIndex]} と ${simData[targetIndex]} をスワップ`,
+					description: `${simData[currentIndex].toString()} と ${simData[targetIndex].toString()} をスワップ`,
 					duration: 800,
 				});
 
@@ -174,7 +193,7 @@ export const useHeapLogic = () => {
 			steps.push({
 				type: "complete",
 				indices: [],
-				description: `要素 ${rootValue} の削除完了`,
+				description: `要素 ${rootValue.toString()} の削除完了`,
 				duration: 400,
 			});
 
@@ -191,6 +210,7 @@ export const useHeapLogic = () => {
 
 			while (currentIndex > 0) {
 				const parentIndex = Math.floor((currentIndex - 1) / 2);
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!shouldSwap(newData[parentIndex], newData[currentIndex], type)) {
 					break;
 				}
@@ -219,7 +239,9 @@ export const useHeapLogic = () => {
 			newData.pop();
 
 			let currentIndex = 0;
-			while (true) {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		while (true) {
 				const leftChild = 2 * currentIndex + 1;
 				const rightChild = 2 * currentIndex + 2;
 				let targetIndex = currentIndex;
@@ -272,7 +294,7 @@ export const useHeapLogic = () => {
 			steps.push({
 				type: "highlight",
 				indices: Array.from({ length: n }, (_, i) => i),
-				description: `${n}個の要素からヒープを構築開始`,
+				description: `${n.toString()}個の要素からヒープを構築開始`,
 				duration: 800,
 			});
 
@@ -281,12 +303,12 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "highlight",
 					indices: [i],
-					description: `ノード ${i} (値: ${simData[i]}) からheapify開始`,
+					description: `ノード ${i.toString()} (値: ${simData[i].toString()}) からheapify開始`,
 					duration: 600,
 				});
 
 				// 単一ノードのheapify-downステップを生成
-				const heapifySteps = generateHeapifyDownSteps(simData, i, n, type);
+				const heapifySteps = generateHeapifyDownStepsRef.current?.(simData, i, n, type) ?? [];
 				steps.push(...heapifySteps);
 			}
 
@@ -314,7 +336,8 @@ export const useHeapLogic = () => {
 			const steps: AnimationStep[] = [];
 			let currentIndex = startIndex;
 
-			while (true) {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		while (true) {
 				const leftChild = 2 * currentIndex + 1;
 				const rightChild = 2 * currentIndex + 2;
 				let targetIndex = currentIndex;
@@ -329,7 +352,7 @@ export const useHeapLogic = () => {
 					steps.push({
 						type: "highlight",
 						indices: [currentIndex],
-						description: `ノード ${currentIndex} は葉ノードのため完了`,
+						description: `ノード ${currentIndex.toString()} は葉ノードのため完了`,
 						duration: 400,
 					});
 					break;
@@ -339,7 +362,7 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "compare",
 					indices: [currentIndex, ...childrenToCompare],
-					description: `ノード ${currentIndex}(${simData[currentIndex]}) と子ノード(${childrenToCompare.map((i) => simData[i]).join(", ")})を比較`,
+					description: `ノード ${currentIndex.toString()}(${simData[currentIndex].toString()}) と子ノード(${childrenToCompare.map((i) => simData[i].toString()).join(", ")})を比較`,
 					duration: 600,
 				});
 
@@ -355,7 +378,7 @@ export const useHeapLogic = () => {
 					steps.push({
 						type: "highlight",
 						indices: [currentIndex],
-						description: `ノード ${currentIndex} はヒープ条件を満たしているため完了`,
+						description: `ノード ${currentIndex.toString()} はヒープ条件を満たしているため完了`,
 						duration: 400,
 					});
 					break;
@@ -365,7 +388,7 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "swap",
 					indices: [currentIndex, targetIndex],
-					description: `${simData[currentIndex]} と ${simData[targetIndex]} をスワップしてヒープ条件を満たす`,
+					description: `${simData[currentIndex].toString()} と ${simData[targetIndex].toString()} をスワップしてヒープ条件を満たす`,
 					duration: 800,
 				});
 
@@ -382,6 +405,11 @@ export const useHeapLogic = () => {
 		[shouldSwap],
 	);
 
+	// Update ref after render
+	useEffect(() => {
+		generateHeapifyDownStepsRef.current = generateHeapifyDownSteps;
+	}, [generateHeapifyDownSteps]);
+
 	// 実際のヒープ化操作（アニメーションなし）
 	const buildHeap = useCallback(
 		(data: number[], type: HeapType): number[] => {
@@ -390,7 +418,7 @@ export const useHeapLogic = () => {
 
 			// 最後の親ノードから開始してheapify down
 			for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
-				heapifyDown(newData, i, n, type);
+				heapifyDownRef.current?.(newData, i, n, type);
 			}
 
 			return newData;
@@ -403,7 +431,8 @@ export const useHeapLogic = () => {
 		(data: number[], startIndex: number, heapSize: number, type: HeapType) => {
 			let currentIndex = startIndex;
 
-			while (true) {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		while (true) {
 				const leftChild = 2 * currentIndex + 1;
 				const rightChild = 2 * currentIndex + 2;
 				let targetIndex = currentIndex;
@@ -433,6 +462,11 @@ export const useHeapLogic = () => {
 		[shouldSwap],
 	);
 
+	// Update ref after render
+	useEffect(() => {
+		heapifyDownRef.current = heapifyDown;
+	}, [heapifyDown]);
+
 	// レベル順走査のアニメーションステップを生成
 	const generateLevelOrderSteps = useCallback(
 		(data: number[]): AnimationStep[] => {
@@ -461,7 +495,7 @@ export const useHeapLogic = () => {
 				steps.push({
 					type: "highlight",
 					indices: [i],
-					description: `ノード ${i}: 値 ${data[i]} を訪問`,
+					description: `ノード ${i.toString()}: 値 ${data[i].toString()} を訪問`,
 					duration: 500,
 				});
 			}

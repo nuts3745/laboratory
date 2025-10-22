@@ -44,8 +44,8 @@ export function HeapNode({
 			type="button"
 			className={getNodeClassName()}
 			style={{
-				left: `${position.x}px`,
-				top: `${position.y}px`,
+				left: `${position.x.toString()}px`,
+				top: `${position.y.toString()}px`,
 			}}
 			onClick={handleClick}
 			onKeyDown={(e) => {
@@ -54,7 +54,7 @@ export function HeapNode({
 					handleClick();
 				}
 			}}
-			aria-label={`ヒープノード: 値${value}, インデックス${index}`}
+			aria-label={`ヒープノード: 値${value.toString()}, インデックス${index.toString()}`}
 		>
 			{value}
 		</button>
@@ -92,10 +92,10 @@ export function HeapEdge({
 		<div
 			className={`heap-edge ${isHighlighted ? "highlighted" : ""}`}
 			style={{
-				left: `${startX}px`,
-				top: `${startY}px`,
-				width: `${adjustedLength}px`,
-				transform: `rotate(${angle}deg)`,
+				left: `${startX.toString()}px`,
+				top: `${startY.toString()}px`,
+				width: `${adjustedLength.toString()}px`,
+				transform: `rotate(${angle.toString()}deg)`,
 				transformOrigin: "0 50%",
 			}}
 		/>

@@ -40,7 +40,7 @@ export function ArrayDisplay({ heapState, onCellClick }: ArrayDisplayProps) {
 					heapState.data.map((value, index) => (
 						<button
 							type="button"
-							key={`cell-${index}-${value}`}
+							key={`cell-${index.toString()}-${value.toString()}`}
 							className={getCellClassName(index)}
 							onClick={() => {
 								handleCellClick(index);
@@ -51,7 +51,7 @@ export function ArrayDisplay({ heapState, onCellClick }: ArrayDisplayProps) {
 									handleCellClick(index);
 								}
 							}}
-							aria-label={`配列要素: インデックス${index}, 値${value}`}
+							aria-label={`配列要素: インデックス${index.toString()}, 値${value.toString()}`}
 						>
 							<div className="cell-index">{index}</div>
 							<div className="cell-value">{value}</div>

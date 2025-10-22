@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { HeapState, HeapType, ToastMessage } from "../types/heap.js";
 import { BinaryHeapUtils } from "../utils/heapUtils.js";
 
@@ -19,6 +19,7 @@ export function useHeapState(initialType: HeapType = "max") {
 	});
 
 	const [toasts, setToasts] = useState<ToastMessage[]>([]);
+	const removeToastRef = useRef<((id: string) => void) | null>(null);
 
 	// Pure state update functions
 	const updateHeapType = useCallback((type: HeapType) => {
@@ -95,7 +96,7 @@ export function useHeapState(initialType: HeapType = "max") {
 
 			if (!persistent) {
 				setTimeout(() => {
-					removeToast(id);
+					removeToastRef.current?.(id);
 				}, duration);
 			}
 
@@ -107,6 +108,11 @@ export function useHeapState(initialType: HeapType = "max") {
 	const removeToast = useCallback((id: string) => {
 		setToasts((prev) => prev.filter((toast) => toast.id !== id));
 	}, []);
+
+	// Update ref after render
+	useEffect(() => {
+		removeToastRef.current = removeToast;
+	}, [removeToast]);
 
 	const clearAllToasts = useCallback(() => {
 		setToasts([]);

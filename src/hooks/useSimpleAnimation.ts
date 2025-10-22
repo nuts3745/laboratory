@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface AnimationStep {
 	type: "highlight" | "compare" | "swap" | "complete";
@@ -28,8 +28,11 @@ export const useSimpleAnimation = () => {
 		swappingNodes: [],
 	});
 
-	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const timeoutRef = useRef<number | null>(null);
 	const stepsRef = useRef<AnimationStep[]>([]);
+	const executeStepRef = useRef<
+		((stepIndex: number, onSwap?: (i1: number, i2: number) => void) => void) | null
+	>(null);
 
 	const clearAnimation = useCallback(() => {
 		if (timeoutRef.current) {
@@ -55,7 +58,7 @@ export const useSimpleAnimation = () => {
 			}
 
 			const step = steps[stepIndex];
-			const duration = step.duration || 800;
+			const duration = step.duration ?? 800;
 
 			setAnimationState((prev) => ({
 				...prev,
@@ -73,11 +76,16 @@ export const useSimpleAnimation = () => {
 			}
 
 			timeoutRef.current = setTimeout(() => {
-				executeStep(stepIndex + 1, onSwap);
+				executeStepRef.current?.(stepIndex + 1, onSwap);
 			}, duration);
 		},
 		[clearAnimation],
 	);
+
+	// Update ref after render using useEffect
+	useEffect(() => {
+		executeStepRef.current = executeStep;
+	}, [executeStep]);
 
 	const startAnimation = useCallback(
 		(steps: AnimationStep[], onSwap?: (i1: number, i2: number) => void) => {

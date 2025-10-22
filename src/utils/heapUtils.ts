@@ -145,7 +145,8 @@ export const createBinaryHeapUtils = (): HeapOperations => {
 		const swaps: { from: number; to: number }[] = [];
 		let currentIndex = index;
 
-		while (true) {
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+	while (true) {
 			const leftChild = getLeftChildIndex(currentIndex);
 			const rightChild = getRightChildIndex(currentIndex);
 			let targetIndex = currentIndex;

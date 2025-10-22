@@ -60,7 +60,7 @@ export function HeapControls({
 				onBuildHeap(values);
 				setArrayInput("");
 			}
-		} catch (error) {
+		} catch {
 			// Handle error silently or show toast
 		}
 	};

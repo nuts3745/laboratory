@@ -55,7 +55,7 @@ export function HeapVisualizer({
 				parentPos: nodePositions[index],
 				childPos: nodePositions[childIndex],
 				isHighlighted,
-				key: `edge-${index}-${childIndex}`,
+				key: `edge-${index.toString()}-${childIndex.toString()}`,
 			});
 		}
 
@@ -85,7 +85,7 @@ export function HeapVisualizer({
 				{/* Render nodes */}
 				{heapState.data.map((value, index) => (
 					<HeapNode
-						key={`node-${index}-${value}`}
+						key={`node-${index.toString()}-${value.toString()}`}
 						value={value}
 						index={index}
 						position={nodePositions[index]}

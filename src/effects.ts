@@ -15,8 +15,8 @@ export function setupMouseTrailEffect() {
 		const scrollLeft =
 			window.pageXOffset || document.documentElement.scrollLeft;
 
-		interactiveEl.style.left = e.clientX + scrollLeft + "px";
-		interactiveEl.style.top = e.clientY + scrollTop + "px";
+		interactiveEl.style.left = `${(e.clientX + scrollLeft).toString()}px`;
+		interactiveEl.style.top = `${(e.clientY + scrollTop).toString()}px`;
 		interactiveEl.style.position = "absolute";
 		interactiveEl.style.zIndex = "9999";
 		interactiveEl.style.pointerEvents = "none";

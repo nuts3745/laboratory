@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 /**
  * Advanced high-performance animation system
@@ -36,6 +36,7 @@ export const useAdvancedAnimation = () => {
 	const animationRef = useRef<number | null>(null);
 	const stepIndexRef = useRef(0);
 	const isRunningRef = useRef(false);
+	const stopAnimationRef = useRef<(() => void) | null>(null);
 
 	const defaultConfig: AnimationConfig = {
 		duration: 800,
@@ -50,7 +51,7 @@ export const useAdvancedAnimation = () => {
 		): Promise<void> => {
 			return new Promise((resolve) => {
 				if (isRunningRef.current) {
-					stopAnimation();
+					stopAnimationRef.current?.();
 				}
 
 				const mergedConfig = { ...defaultConfig, ...config };
@@ -65,7 +66,7 @@ export const useAdvancedAnimation = () => {
 					}
 
 					const step = steps[stepIndex];
-					const stepDuration = step.duration || mergedConfig.duration;
+					const stepDuration = step.duration ?? mergedConfig.duration;
 
 					if (step.callback) {
 						step.callback();
@@ -91,7 +92,7 @@ export const useAdvancedAnimation = () => {
 		): Promise<void> => {
 			return new Promise((resolve) => {
 				if (isRunningRef.current) {
-					stopAnimation();
+					stopAnimationRef.current?.();
 				}
 
 				const mergedConfig = { ...defaultConfig, ...config };
@@ -179,7 +180,7 @@ export const useAdvancedAnimation = () => {
 		): Promise<void> => {
 			return new Promise((resolve) => {
 				if (isRunningRef.current) {
-					stopAnimation();
+					stopAnimationRef.current?.();
 				}
 
 				const mergedConfig = { ...defaultConfig, ...config };
@@ -263,7 +264,7 @@ export const useAdvancedAnimation = () => {
 		): Promise<void> => {
 			return new Promise((resolve) => {
 				if (isRunningRef.current) {
-					stopAnimation();
+					stopAnimationRef.current?.();
 				}
 
 				const mergedConfig = { ...defaultConfig, ...config };
@@ -296,6 +297,11 @@ export const useAdvancedAnimation = () => {
 		isRunningRef.current = false;
 		stepIndexRef.current = 0;
 	}, []);
+
+	// Update ref after render
+	useEffect(() => {
+		stopAnimationRef.current = stopAnimation;
+	}, [stopAnimation]);
 
 	const isRunning = useCallback(() => {
 		return isRunningRef.current;
